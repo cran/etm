@@ -1,0 +1,35 @@
+summary.etm <- function(object, ...) {
+  if (!inherits(object, "etm"))
+    stop("'object' must be of class 'etm'")
+  ufrom <- unique(object$trans$from)
+  uto <- unique(object$trans$to)
+  absorb <- setdiff(uto, ufrom)
+  cat("Possible transitions:\n")
+  print(object$trans)
+  cat("\n")
+  cat("Transient states: ")
+  for (i in 1:length(ufrom))
+    cat(paste("'", ufrom[i], "'  ", sep=""))
+  cat("\n\n")
+  cat("Absorbing states: ")
+  for (i in 1:length(absorb))
+    cat(paste("'", absorb[i], "'  ", sep=""))
+  cat("\n\n")
+  if (!is.null(object$time)) {
+    cat(paste("Estimate of P(", object$s, ",", object$t, "]", sep=""))
+    cat("\n")
+    print(object$est[, , dim(object$est)[3]])
+    cat("\n")
+    cat(paste("Estimate of cov(P(", object$s, ",", object$t, "]) \n", sep=""))
+    print(object$cov[, , dim(object$cov)[3]])
+    cat("\n")
+  }
+  else {
+    cat(paste("No event in (", object$s, ",", object$t, "]", sep=""))
+    cat("\n")
+    cat(paste("Estimate of P(", object$s, ",", object$t, "]", sep=""))
+    cat("\n")
+    print(object$est[, , 1])
+    cat("\n")
+  }
+}

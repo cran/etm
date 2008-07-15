@@ -1,0 +1,6 @@
+import(lattice)
+export(etm)
+S3method(xyplot, etm)
+S3method(print, etm)
+S3method(summary, etm)
+useDynLib(etm, risk_set)
