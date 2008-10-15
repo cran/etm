@@ -1,0 +1,12 @@
+14.10.2008 arthur.allignol@fdm.uni-freiburg.de
+	
+	- Bug correction: now works when there is only 1 transient state.
+	- Speed-up:
+		- Modification of the part which transforms
+		the data into counting process
+		- Modification of the C++ routine
+		that is now faster nd computes the increments
+		of the Nelson-Aalen estimator
+	- Add a plot function
+		
+	

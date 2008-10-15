@@ -27,4 +27,4 @@
 }
 \author{Arthur Allignol, \email{arthur.allignol@fdm.uni-freiburg.de}}
 \seealso{\code{\link{etm}}, \code{\link[lattice]{xyplot}}}
-\keyword{device}
+\keyword{hplot}
