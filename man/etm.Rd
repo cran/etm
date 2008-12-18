@@ -79,9 +79,9 @@ etm(data, state.numbers, tra, cens.name, s, t = "last", covariance = TRUE)
   \item{state.numbers}{A vector of character giving the state numbers.}
   \item{cens.name}{How the censored observation are coded in the data
     set.}
-  \item{nrisk}{Matrix indicating the number of individuals at risk just
+  \item{n.risk}{Matrix indicating the number of individuals at risk just
     before an event}
-  \item{nev}{Array containing the number of transitions at each event times}
+  \item{n.event}{Array containing the number of transitions at each event times}
 }
 \references{Andersen, P.K., Borgan, O., Gill, R.D. and Keiding,
   N. (1993). \emph{Statistical models based on counting
@@ -136,7 +136,7 @@ tra[1, 2:3] <- TRUE
 tra[2, c(1, 3)] <- TRUE
 
 # etm
-tr.prob <- etm(sir.cont, c("0", "1", "2"), tra, "cens", 1, 100)
+tr.prob <- etm(sir.cont, c("0", "1", "2"), tra, "cens", 1)
 
 tr.prob
 summary(tr.prob)

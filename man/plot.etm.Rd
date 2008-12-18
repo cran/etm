@@ -3,45 +3,38 @@
 
 \title{Plot method for an etm object}
 \description{
-  plot method for an object of class 'etm'. This function plots
-  estimates of the transition probabilities in one panel.
+  Plot method for an object of class 'etm'. It draws the estimated
+  transition probabilities in a basic scatterplot.
 }
 \usage{
-\method{plot}{etm}(x, tr.choice, xlab = "Time",
-ylab = "Transition Probability",
-legend = TRUE, curvlab, locator = FALSE,
-coord, col, lty, xlim, ylim, ...)
+\S3method{plot}{etm}(x, tr.choice = "all", xlab = "Time",
+         ylab = "Transition Probability", col, lty, xlim, ylim,
+         legend = TRUE, legend.pos, curvlab, legend.bty = "n", ...)
 }
-
 \arguments{
   \item{x}{An object of class 'etm'}
-  \item{tr.choice}{A character vector of the form 'c("from to","from
+  \item{tr.choice}{ character vector of the form 'c("from to","from
     to")' specifying which transitions should be plotted. Default, all
     the transition probabilities are plotted}
   \item{xlab}{x-axis label. Default is "Time"}
   \item{ylab}{y-axis label. Default is "Transition Probability"}
-  \item{legend}{A logical specifying if a legend should be added}
-  \item{curvlab}{If legeng=TRUE, a character or expression vector to
-    appear in the legend. Default is the name of the transitions}
-  \item{locator}{A logical indicating whether use \code{locator} to put
-    the legend}
-  \item{coord}{If locator=FALSE, a vector of length 2 indicating the
-    coordinates of the legend}
   \item{col}{Vector of colour. Default is black}
   \item{lty}{Vector of line type. Default is 1:number of transitions}
   \item{xlim}{Limits of x-axis for the plot}
   \item{ylim}{Limits of y-axis for the plot}
-  \item{\dots}{Additional arguments for plot}
-}
-\details{
-  This plot method permits to draw several transition probabilities
-  on the same panel.
+  \item{legend}{A logical specifying if a legend should be added}
+  \item{legend.pos}{A vector giving the legend's position. See
+    \code{\link{legend}} for further details}
+  \item{curvlab}{A character or expression vector to appear in the
+    legend. Default is the name of the transitions}
+  \item{legend.bty}{Box type for the legend}
+  \item{\dots}{Further arguments for plot}
 }
 \value{
-  No value returned.
+  No value returned
 }
-\author{Arthur Allignol \email{arthur.allignol@fdm.uni-freiburg.de}}
-\seealso{\code{\link{etm}}, \code{\link{xyplot.etm}}}
+\author{Arthur Allignol, \email{arthur.allignol@fdm.uni-freiburg.de}}
+\seealso{\code{\link{plot.default}}, \code{\link{legend}}, \code{\link{etm}} }
 \examples{
 data(sir.cont)
 

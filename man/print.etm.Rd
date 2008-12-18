@@ -1,29 +1,28 @@
-\name{print-summary}
+\name{print.etm}
 \alias{print.etm}
-\alias{summary.etm}
-\title{Print and summary methods for object of class 'etm'}
+\title{Print method for object of class 'etm'}
 \description{
-  Print and summary methods for objects of class \code{etm}.
+  Print method for objects of class \code{etm}.
 }
 \usage{
-\S3method{print}{etm}(x, ...)
-\S3method{summary}{etm}(object, ...)
+\S3method{print}{etm}(x, covariance = TRUE, whole = TRUE, ...)
 }
 \arguments{
   \item{x}{An object of class \code{etm}.}
-  \item{object}{An object of class \code{etm}.}
+  \item{covariance}{Whether print the covariance matrix. Default is
+    TRUE}
+  \item{whole}{Whether to plot the entire covariance matrix. If set to
+    FALSE, rows and columns containing only 0 will be removed for
+    printing.}
   \item{\dots}{Further arguments for print or summary.}
 }
 \details{
-  The print method displays the estimated matrix of transition
-  probabilities for each event times in \eqn{(s, t]}{(s, t]}.
-  
-  The summary methods provides a description of the multistate model,
-  along with the estimation of \eqn{P(s, t]}{P(s, t]} and cov\eqn{(P(s,
-  t])}{(P(s, t])}.
+  The function prints a matrix giving the possible transitions, along
+  with the estimates of \eqn{P(s, t)}{P(s, t)} and \eqn{cov(P(s,
+    t))}{cov(P(s, t))}.
 }
 \value{
-  No value returned
+  \code{x}, with the invisible flag set.
 }
 \author{Arthur Allignol, \email{arthur.allignol@fdm.uni-freiburg.de}}
 \seealso{\code{\link{etm}}}

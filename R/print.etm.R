@@ -1,24 +1,29 @@
-print.etm <- function(x, ...) {
-  if (!inherits(x, "etm"))
-    stop("'x' must be of class 'etm'")
-  if (!is.null(x$time)) {
-    cat(paste("Time points in the interval (", x$s, ",", x$t, "]", sep=""))
+print.etm <- function(x, covariance = TRUE, whole = TRUE, ...) {
+    if (!inherits(x, "etm"))
+        stop("'x' must be of class 'etm'")
+    absorb <- setdiff(levels(x$tran$to), levels(x$trans$from))
+    transient <- unique(x$state.numbers[!(x$state.numbers %in% absorb)])
+    cat(paste("Multistate model with", length(transient), "transient state(s)\n",
+              "and", length(absorb), "absorbing state(s)\n\n", sep = " "))
+    cat("Possible transitions:\n")
+    print(x$trans, row.names = FALSE)
     cat("\n")
-    print(x$time)
-    cat("\n")
-    for (i in 1:length(x$time)) {
-      cat(paste("Estimate of P(", x$s, ",", x$time[i], ")", sep=""))
-      cat("\n")
-      print(x$est[, , i])
-      cat("\n")
+    cat(paste("Estimate of P(", x$s, ", ", x$t, ")\n", sep = ""))
+    print(x$est[, , dim(x$est)[3]]); cat("\n")
+    if (!is.null(x$cov) & covariance == TRUE) {
+        if (whole) {
+            cat(paste("Estimate of cov(P(", x$s, ", ", x$t, "))\n", sep = ""))
+            print(x$cov[, , dim(x$cov)[3]])
+        }
+        else {
+            cov <- x$cov[, , dim(x$cov)[3]][rowSums(x$cov[, , dim(x$cov)[3]]) != 0, ]
+            cova <- cov[, colSums(cov) != 0]
+            cat(paste("Estimate of cov(P(", x$s, ", ", x$t, "))\n", sep = ""))
+            print(cova)
+        }
     }
-  }
-  else {
-    cat(paste("No event in (", x$s, ",", x$t, "]", sep=""))
-    cat("\n")
-    cat(paste("Estimate of P(", x$s, ",", x$t, "]", sep=""))
-    cat("\n")
-    print(x$est[, , 1])
-    cat("\n")
-  }
+    invisible(x)
 }
+    
+    
+            

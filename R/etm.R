@@ -21,75 +21,45 @@ prodint <- function(dna, times, first, last) {
 
 
 
-#####################
-### cov of dNA(t) ###
-#####################
-
-cov.dNA <- function(nrisk, nev, dd) {
-    cov <- matrix(0, dd^2, dd^2)
-    for (i in 1:dd) {
-        for (j in 1:dd) {
-            temp <- matrix(0, dd, dd)
-            for (k in 1:dd) {
-                for (l in 1:dd) {
-                    if (k == l) {
-                        if (k == i) {
-                            if (l == j) {
-                                temp[k, l] <- ((nrisk[k] - sum(nev[k, ])) * sum(nev[k, ]))/nrisk[k]^3
-                            }
-                            else {
-                                temp[k, l] <- -(((nrisk[k] - sum(nev[k, ])) * nev[k, j])/nrisk[k]^3)
-                            }
-                        }
-                        else {
-                            if (i != k & j != k) {
-                                if (i == j) {
-                                    temp[k, l] <- ((nrisk[k] - nev[k, i]) * nev[k, i]) / nrisk[k]^3
-                                }
-                                else {
-                                    temp[k, l] <- (-nev[k, i] * nev[k, j]) / nrisk[k]^3
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            cov[((i - 1) * dd + 1):(i*dd), ((j - 1) * dd + 1):(j*dd)] <- temp
-        }
-    }
-    cov[is.nan(cov)] <- 0
-    for (m in 1:dd^2) {
-        for (n in 1:dd^2) {
-            if (cov[m, n] != 0) cov[n, m] <- cov[m, n]
-        }
-    }
-    cov
-}
 
 
 ####################################
 ### Variance of the AJ estimator ###
 ####################################
 
-var.aj <- function(est, dna, nrisk, nev, times, first, last) {
+var.aj <- function (est, dna, nrisk, nev, times, first, last) {
+    d <- dim(nev)[1]
     if (first >= last) {
-        return(0)
+        return(NULL)
     }
     else {
         out <- list()
-        cov.dna <- cov.dNA(nrisk[first, ], nev[, , first], dim(nev)[1])
-        out[[1]] <- diag(1, dim(nev)[1]^2) %*% cov.dna %*% diag(1, dim(nev)[1]^2)
-        d <- dim(nev)[1]
+        cov.dna <- matrix(.C(cov_dna,
+                             as.double(nrisk[first, ]),
+                             as.double(nev[, , first]),
+                             as.integer(d),
+                             cov = double(d^2 * d^2)
+                             )$cov, d^2, d^2)
+        bI <- diag(1, d^2)
+        out[[1]] <- bI %*% cov.dna %*% bI
+        Id <- diag(1, d)
         for (i in 1:length(times[(first + 1):last])) {
             step <- first + i
-            cov.dna <- cov.dNA(nrisk[step, ], nev[, , step], d)
-            out[[i+1]] <- (t(diag(1, d) + dna[, , step]) %x% diag(1, d)) %*% out[[i]] %*%
-                ((diag(1, d) + dna[, , step]) %x% diag(1, d)) +
-                    (diag(1, d) %x% est[, , i]) %*% cov.dna %*% (diag(1, d) %x% t(est[, , i]))
+            cov.dna <- matrix(.C(cov_dna,
+                                 as.double(nrisk[step, ]),
+                                 as.double(nev[, , step]),
+                                 as.integer(d),
+                                 cov = double(d^2 * d^2)
+                                 )$cov, d^2, d^2)
+            out[[i + 1]] <- (t(Id + dna[, , step]) %x% Id) %*% out[[i]] %*%
+                ((Id + dna[, , step]) %x% Id) +
+                    (Id %x% est[, , i]) %*% cov.dna %*% (Id %x% t(est[, , i]))
         }
     }
     return(out)
 }
+         
+
 
 ###########
 ### etm ###
@@ -151,6 +121,8 @@ etm <- function(data, state.numbers, tra, cens.name, s, t="last", covariance=TRU
         stop("There is undefined transitions in the data set")
     if (sum(as.character(data$from)==as.character(data$to)) > 0)
         stop("Transitions into the same state are not allowed")
+    if (!(all(ref %in% test) == TRUE))
+        warning("You may have specified more possible transitions than actually present in the data")
 ### data.frame transformation
     data$from <- as.factor(data$from)
     data$to <- as.factor(data$to)
@@ -186,7 +158,7 @@ etm <- function(data, state.numbers, tra, cens.name, s, t="last", covariance=TRU
     times <- sort(unique(ttime))
     data$from <- as.integer(as.character(data$from))
     data$to <- as.integer(as.character(data$to))
-    temp <- .C("risk_set_etm",
+    temp <- .C(risk_set_etm,
                as.integer(nrow(data)),
                as.integer(length(times)),
                as.integer(c(dim(tra), length(times))),
@@ -198,12 +170,10 @@ etm <- function(data, state.numbers, tra, cens.name, s, t="last", covariance=TRU
                nrisk=integer(dim(tra)[1] * length(times)),
                ncens=integer(dim(tra)[1] * length(times)),
                nev=integer(dim(tra)[1] * dim(tra)[2] * length(times)),
-               dna=double(dim(tra)[1] * dim(tra)[2] * length(times)),
-               PACKAGE = "etm")
+               dna=double(dim(tra)[1] * dim(tra)[2] * length(times)))
     nrisk <- matrix(temp$nrisk, ncol=dim(tra)[1], nrow=length(times))
     ncens <- matrix(temp$ncens, ncol=dim(tra)[1], nrow=length(times))
     nev <- array(temp$nev, dim=c(dim(tra), length(times)))
-    if (sum(nrisk[1, ]==0)) nrisk[1, ] <- nrisk[2, ]
     dna <- array(temp$dna, dim=c(dim(tra), length(times)))
     ii <- seq_len(dim(tra)[1])
     for (i in seq_along(times)) {
@@ -218,26 +188,39 @@ etm <- function(data, state.numbers, tra, cens.name, s, t="last", covariance=TRU
         stop("'s' or 't' is an invalid time")
     first <- length(times[times <= s]) + 1
     last <- length(times[times <= t])
-    est <- prodint(dna, times, first, last)
-    #
-    if (covariance == TRUE) {
-        var <- var.aj(est$est, dna, nrisk, nev, times, first, last)
-        var <- array(unlist(var), dim=c(dim(nev)[1]^2, dim(nev)[1]^2, length(est$time)))
-        pos <- sapply(1:length(state.numbers), function(i) {
-            paste(state.numbers, state.numbers[i])
-        })
-        pos <- matrix(pos)
-        dimnames(var) <- list(pos, pos, est$time)
+    if (first >= last) {
+        est <- list()
+        est$est <- array(diag(1, dim(tra)[1], dim(tra)[2]), c(dim(tra), 1))
+        dimnames(est$est) <- list(state.numbers, state.numbers, t)
+        est$time <- NULL
+        var <- NULL
+        nrisk <- matrix(nrisk[last, ], 1, dim(tra)[1])
+        nev <- array(0, dim(tra))
     }
-    else var <- NULL
-    dimnames(est$est) <- list(state.numbers, state.numbers, est$time)
-    dimnames(nev) <- list(state.numbers, state.numbers, times)
+    else {
+        est <- prodint(dna, times, first, last)
+        ##
+        if (covariance == TRUE) {
+            var <- var.aj(est$est, dna, nrisk, nev, times, first, last)
+            var <- array(unlist(var), dim=c(dim(nev)[1]^2, dim(nev)[1]^2, length(est$time)))
+            pos <- sapply(1:length(state.numbers), function(i) {
+                paste(state.numbers, state.numbers[i])
+            })
+            pos <- matrix(pos)
+            dimnames(var) <- list(pos, pos, est$time)
+        }
+        else var <- NULL
+        nrisk <- nrisk[first:last, ]
+        nev <- nev[, , first:last]
+        dimnames(est$est) <- list(state.numbers, state.numbers, est$time)
+        dimnames(nev) <- list(state.numbers, state.numbers, est$time)
+    }
     colnames(nrisk) <- state.numbers
-    nrisk <- nrisk[first:last, ]
     nrisk <- nrisk[, !(colnames(nrisk) %in% setdiff(unique(trans$to), unique(trans$from)))]
     res <- list(est = est$est, cov = var, time = est$time, s =s, t = t,
                 trans = trans, state.numbers = state.numbers, cens.name = cens.name,
-                n.risk = nrisk, n.event = nev[, , first:last])
+                n.risk = nrisk, n.event = nev)
     class(res) <- "etm"
     res
 }
+
