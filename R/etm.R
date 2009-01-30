@@ -27,13 +27,13 @@ prodint <- function(dna, times, first, last) {
 ### Variance of the AJ estimator ###
 ####################################
 
-var.aj <- function (est, dna, nrisk, nev, times, first, last) {
+var.aj <- function(est, dna, nrisk, nev, times, first, last) {
     d <- dim(nev)[1]
     if (first >= last) {
         return(NULL)
     }
     else {
-        out <- list()
+        out <- array(0, dim=c(dim(dna)[c(1, 2)]^2, (last-first+1)))
         cov.dna <- matrix(.C(cov_dna,
                              as.double(nrisk[first, ]),
                              as.double(nev[, , first]),
@@ -41,7 +41,7 @@ var.aj <- function (est, dna, nrisk, nev, times, first, last) {
                              cov = double(d^2 * d^2)
                              )$cov, d^2, d^2)
         bI <- diag(1, d^2)
-        out[[1]] <- bI %*% cov.dna %*% bI
+        out[, , 1] <- bI %*% cov.dna %*% bI
         Id <- diag(1, d)
         for (i in 1:length(times[(first + 1):last])) {
             step <- first + i
@@ -51,7 +51,7 @@ var.aj <- function (est, dna, nrisk, nev, times, first, last) {
                                  as.integer(d),
                                  cov = double(d^2 * d^2)
                                  )$cov, d^2, d^2)
-            out[[i + 1]] <- (t(Id + dna[, , step]) %x% Id) %*% out[[i]] %*%
+            out[, , i + 1] <- (t(Id + dna[, , step]) %x% Id) %*% out[, , i] %*%
                 ((Id + dna[, , step]) %x% Id) +
                     (Id %x% est[, , i]) %*% cov.dna %*% (Id %x% t(est[, , i]))
         }
@@ -65,13 +65,13 @@ var.aj <- function (est, dna, nrisk, nev, times, first, last) {
 ### etm ###
 ###########      
       
-etm <- function(data, state.numbers, tra, cens.name, s, t="last", covariance=TRUE) {
+etm <- function(data, state.names, tra, cens.name, s, t="last", covariance=TRUE) {
     if (missing(data))
         stop("Argument 'data' is missing with no default")
     if (missing(tra))
         stop("Argument 'tra' is missing with no default")
-    if (missing(state.numbers))
-        stop("Argument 'state.numbers' is missing with no default")
+    if (missing(state.names))
+        stop("Argument 'state.names' is missing with no default")
     if (missing(cens.name))
         stop("Argument 'cens.name' is missing with no default")
     if (missing(s))
@@ -85,22 +85,22 @@ etm <- function(data, state.numbers, tra, cens.name, s, t="last", covariance=TRU
         stop("Argument 'tra' must be a quadratic  matrix.")
     if (sum(diag(tra)) > 0)
         stop("transitions into the same state are not allowed")
-    if (nrow(tra) != length(state.numbers)) {
+    if (nrow(tra) != length(state.names)) {
         stop("The row number of 'tra' must be equal to the number of states.")
     }
     if (!is.logical(tra)) {
         stop("'tra' must be a matrix of logical values, which describes the possible transitions.")
     }
-    if (length(state.numbers) != length(unique(state.numbers))) {
-        stop("The state numbers must be unique.")
+    if (length(state.names) != length(unique(state.names))) {
+        stop("The state names must be unique.")
     }
     if (!(is.null(cens.name))) {
-        if (cens.name %in% state.numbers) {
+        if (cens.name %in% state.names) {
             stop("The name of the censoring variable just is a name of the model states.")
         }
     }
 ### transitions
-    colnames(tra) <- rownames(tra) <- state.numbers
+    colnames(tra) <- rownames(tra) <- state.names
     t.from <- lapply(1:dim(tra)[2], function(i) {
         rep(rownames(tra)[i], sum(tra[i, ]))
     })
@@ -127,16 +127,16 @@ etm <- function(data, state.numbers, tra, cens.name, s, t="last", covariance=TRU
     data$from <- as.factor(data$from)
     data$to <- as.factor(data$to)
     if (!(is.null(cens.name))) {
-        data$from <- factor(data$from, levels = c(cens.name, state.numbers), ordered = TRUE)
-        levels(data$from) <- 0:length(state.numbers)
-        data$to <- factor(data$to, levels = c(cens.name, state.numbers), ordered = TRUE)
-        levels(data$to) <- 0:length(state.numbers)
+        data$from <- factor(data$from, levels = c(cens.name, state.names), ordered = TRUE)
+        levels(data$from) <- 0:length(state.names)
+        data$to <- factor(data$to, levels = c(cens.name, state.names), ordered = TRUE)
+        levels(data$to) <- 0:length(state.names)
     }
     else{
-        data$from <- factor(data$from, levels = state.numbers, ordered = TRUE)
-        levels(data$from) <- 1:length(state.numbers)
-        data$to <- factor(data$to, levels = state.numbers, ordered = TRUE)
-        levels(data$to) <- 1:length(state.numbers)
+        data$from <- factor(data$from, levels = state.names, ordered = TRUE)
+        levels(data$from) <- 1:length(state.names)
+        data$to <- factor(data$to, levels = state.names, ordered = TRUE)
+        levels(data$to) <- 1:length(state.names)
     }
 ### if not, put like counting process data
     if ("time" %in% names(data)) {
@@ -191,7 +191,7 @@ etm <- function(data, state.numbers, tra, cens.name, s, t="last", covariance=TRU
     if (first >= last) {
         est <- list()
         est$est <- array(diag(1, dim(tra)[1], dim(tra)[2]), c(dim(tra), 1))
-        dimnames(est$est) <- list(state.numbers, state.numbers, t)
+        dimnames(est$est) <- list(state.names, state.names, t)
         est$time <- NULL
         var <- NULL
         nrisk <- matrix(nrisk[last, ], 1, dim(tra)[1])
@@ -202,9 +202,8 @@ etm <- function(data, state.numbers, tra, cens.name, s, t="last", covariance=TRU
         ##
         if (covariance == TRUE) {
             var <- var.aj(est$est, dna, nrisk, nev, times, first, last)
-            var <- array(unlist(var), dim=c(dim(nev)[1]^2, dim(nev)[1]^2, length(est$time)))
-            pos <- sapply(1:length(state.numbers), function(i) {
-                paste(state.numbers, state.numbers[i])
+            pos <- sapply(1:length(state.names), function(i) {
+                paste(state.names, state.names[i])
             })
             pos <- matrix(pos)
             dimnames(var) <- list(pos, pos, est$time)
@@ -212,13 +211,13 @@ etm <- function(data, state.numbers, tra, cens.name, s, t="last", covariance=TRU
         else var <- NULL
         nrisk <- nrisk[first:last, ]
         nev <- nev[, , first:last]
-        dimnames(est$est) <- list(state.numbers, state.numbers, est$time)
-        dimnames(nev) <- list(state.numbers, state.numbers, est$time)
+        dimnames(est$est) <- list(state.names, state.names, est$time)
+        dimnames(nev) <- list(state.names, state.names, est$time)
     }
-    colnames(nrisk) <- state.numbers
-    nrisk <- nrisk[, !(colnames(nrisk) %in% setdiff(unique(trans$to), unique(trans$from)))]
+    colnames(nrisk) <- state.names
+    nrisk <- nrisk[, !(colnames(nrisk) %in% setdiff(unique(trans$to), unique(trans$from))), drop = FALSE]
     res <- list(est = est$est, cov = var, time = est$time, s =s, t = t,
-                trans = trans, state.numbers = state.numbers, cens.name = cens.name,
+                trans = trans, state.names = state.names, cens.name = cens.name,
                 n.risk = nrisk, n.event = nev)
     class(res) <- "etm"
     res

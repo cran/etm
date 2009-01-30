@@ -8,7 +8,7 @@
   multistate model. The covariance matrix is also computed.
 }
 \usage{
-etm(data, state.numbers, tra, cens.name, s, t = "last", covariance = TRUE)
+etm(data, state.names, tra, cens.name, s, t = "last", covariance = TRUE)
 }
 \arguments{
   \item{data}{ data.frame of the form data.frame(id,from,to,time)
@@ -24,7 +24,7 @@ etm(data, state.numbers, tra, cens.name, s, t = "last", covariance = TRUE)
   This data.frame is transition-oriented, \emph{i.e.} it contains one
   row per transition, and possibly several rows per patient. Specifying
   an entry and exit time permits to take into account left-truncation. }
-  \item{state.numbers}{A vector of characters giving the states numbers.}
+  \item{state.names}{A vector of characters giving the states names.}
   \item{tra}{A quadratic matrix of logical values describing the possible
     transitions within the multistate model. }
   \item{cens.name}{ A character giving the code for censored
@@ -76,7 +76,7 @@ etm(data, state.numbers, tra, cens.name, s, t = "last", covariance = TRUE)
   \item{s}{Start of the time interval.}
   \item{t}{End of the time interval.}
   \item{trans}{A \code{data.frame} giving the possible transitions.}
-  \item{state.numbers}{A vector of character giving the state numbers.}
+  \item{state.names}{A vector of character giving the state names.}
   \item{cens.name}{How the censored observation are coded in the data
     set.}
   \item{n.risk}{Matrix indicating the number of individuals at risk just

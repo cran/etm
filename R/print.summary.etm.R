@@ -12,7 +12,7 @@ print.summary.etm <- function(x, ...) {
         namen <- strsplit(names(x), split = " ")
         for (i in seq_along(x)) {
             cat(paste("Transition", namen[[i]][1], "->", namen[[i]][2], "\n", sep = " "))
-            print(x[[i]][ind, ])
+            print(x[[i]][ind, ], row.names = FALSE)
             cat("\n")
         }
     }
