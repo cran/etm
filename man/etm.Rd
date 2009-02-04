@@ -8,7 +8,8 @@
   multistate model. The covariance matrix is also computed.
 }
 \usage{
-etm(data, state.names, tra, cens.name, s, t = "last", covariance = TRUE)
+etm(data, state.names, tra, cens.name, s, t = "last",
+    covariance = TRUE)
 }
 \arguments{
   \item{data}{ data.frame of the form data.frame(id,from,to,time)
@@ -144,7 +145,8 @@ summary(tr.prob)
 # plotting
 xyplot(tr.prob, tr.choice=c("0 0", "1 1", "0 1", "0 2", "1 0", "1 2"),
        layout=c(2, 3), strip=strip.custom(bg="white",
-         factor.levels=c("0 to 0", "1 to 1", "0 to 1", "0 to 2", "1 to 0", "1 to 2")))
+         factor.levels=
+           c("0 to 0", "1 to 1", "0 to 1", "0 to 2", "1 to 0", "1 to 2")))
 }
 
 \keyword{survival}

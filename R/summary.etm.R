@@ -18,7 +18,7 @@ summary.etm <- function(object, all = FALSE, ...) {
         trs.sep <- matrix(unlist(trs.sep), length(trs.sep), 2, byrow = TRUE)
     }
     else {
-        dtrs <- diag(outer(object$state.numbers, object$state.numbers, paste))
+        dtrs <- diag(outer(object$state.names, object$state.names, paste))
         absorb <- setdiff(levels(object$tran$to), levels(object$trans$from))
         for (i in seq_along(absorb))
             dtrs <- dtrs[-grep(paste("^", absorb[i], sep =""), dtrs, perl = TRUE)]
