@@ -1,33 +1,34 @@
-xyplot.etm <- function(x, data=NULL, tr.choice="all", col=1, lty=1,
-                       xlab="Time", ylab="Estimated Transition probability", ...) {
+xyplot.etm <- function(x, data = NULL, tr.choice = "all", col = c(1, 1, 1), lty = c(1, 3, 3),
+                       xlab="Time", ylab = "Estimated Transition probability",
+                       conf.int = TRUE, ci.fun = "linear", level = 0.95, ...) {
     if (!inherits(x, "etm"))
         stop("Argument 'x' must be of class 'etm'")
-    ufrom <- unique(x$trans$from)
-    uto <- unique(x$trans$to)
-    absorb <- setdiff(uto, ufrom)
-    nam1 <- dimnames(x$est)[[1]]
-    nam2 <- dimnames(x$est)[[2]]
-    pos <- c(paste(nam1[!(nam1 %in% as.character(absorb))],
-                   nam2[!(nam2 %in% as.character(absorb))]),
-             paste(x$trans$from, x$trans$to))
-    if (tr.choice[1]=="all") {
+    if (tr.choice[1] == "all") {
+        ufrom <- unique(x$trans$from)
+        uto <- unique(x$trans$to)
+        absorb <- setdiff(uto, ufrom)
+        nam1 <- dimnames(x$est)[[1]]
+        nam2 <- dimnames(x$est)[[2]]
+        pos <- c(paste(nam1[!(nam1 %in% as.character(absorb))],
+                       nam2[!(nam2 %in% as.character(absorb))]),
+                 paste(x$trans$from, x$trans$to))
         tr.choice <- pos
     }
     else if (sum(tr.choice %in% rownames(x$cov) == FALSE) > 0)
-        stop("Argument 'tr.choice' and possible transitions must match")
-    temp <- sapply(1:length(tr.choice), function(i) {
-        strsplit(tr.choice[i], " ")
-    })
+        stop("Argument 'tr.choice' and possible transitions must match")    
+    temp <- ci.transfo(x, tr.choice, level, ci.fun)
+    for (i in seq_along(temp)) {
+        temp[[i]]$cov <- names(temp)[i]
+    }
     temp <- do.call(rbind, temp)
-    daten <- lapply(1:length(tr.choice), function(i) {
-        est <- x$est[temp[i, 1], temp[i, 2], ]
-        cov <- rep(tr.choice[i], length(x$time))
-        time <- x$time
-        data.frame(est, cov, time)
-    })
-    daten <- do.call(rbind, daten)
-    aa <- xyplot(daten$est ~ daten$time | daten$cov, type="s",
-                 col=col, lty=lty, xlab=xlab, ylab=ylab, ...)
+    temp$cov <- factor(temp$cov, levels = tr.choice)
+    if (conf.int) {
+        aa <- xyplot(temp$P + temp$lower + temp$upper ~ temp$time | temp$cov,
+                     type = "s", col = col, lty = lty, xlab = xlab, ylab = ylab, ...)
+    }
+    else {
+        aa <- xyplot(temp$P ~ temp$time | temp$cov, type = "s",
+                     col = col[1], lty = lty[1], xlab = xlab, ylab = ylab, ...)
+    }
     aa
-}    
-    
+}

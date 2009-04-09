@@ -146,7 +146,30 @@ summary(tr.prob)
 xyplot(tr.prob, tr.choice=c("0 0", "1 1", "0 1", "0 2", "1 0", "1 2"),
        layout=c(2, 3), strip=strip.custom(bg="white",
          factor.levels=
-           c("0 to 0", "1 to 1", "0 to 1", "0 to 2", "1 to 0", "1 to 2")))
+     c("0 to 0", "1 to 1", "0 to 1", "0 to 2", "1 to 0", "1 to 2")))
+
+### example with left-truncation
+
+data(abortion)
+
+# Data set modification in order to be used by mvna
+names(abortion) <- c("id", "entry", "exit", "from", "to")
+abortion$to <- abortion$to + 1
+
+## computation of the matrix giving the possible transitions
+tra <- matrix(FALSE, nrow = 5, ncol = 5)
+tra[1:2, 3:5] <- TRUE
+
+## etm
+fit <- etm(abortion, as.character(0:4), tra, NULL, s = 0)
+
+## plot
+xyplot(fit, tr.choice = c("0 0", "1 1", "0 4", "1 4"),
+       ci.fun = c("log-log", "log-log", "cloglog", "cloglog"),
+       strip = strip.custom(factor.levels = c("P(T > t) -- control",
+                                              "P(T > t) -- exposed",
+                                 "Spontaneous abortion -- control",
+                                 "Spontaneous abortion -- exposed")))
 }
 
 \keyword{survival}

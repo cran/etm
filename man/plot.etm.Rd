@@ -8,8 +8,8 @@
 }
 \usage{
 \S3method{plot}{etm}(x, tr.choice = "all", xlab = "Time",
-         ylab = "Transition Probability", col, lty, xlim, ylim,
-         legend = TRUE, legend.pos, curvlab, legend.bty = "n", ...)
+     ylab = "Transition Probability", col, lty, xlim, ylim,
+     legend = TRUE, legend.pos, curvlab, legend.bty = "n", ...)
 }
 \arguments{
   \item{x}{An object of class 'etm'}

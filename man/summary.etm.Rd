@@ -6,13 +6,22 @@
   Summary method for objects of class \code{etm}
 }
 \usage{
-\S3method{summary}{etm}(object, all = FALSE, ...)
+\S3method{summary}{etm}(object, all = FALSE,
+        ci.fun = "linear", level = 0.95, ...)
 \S3method{print}{summary.etm}(x, ...)
 }
 \arguments{
   \item{object}{An object of class \code{etm}.}
   \item{all}{If set to TRUE, a data.frame will be computed for all
     transitions that are not 0 in the empirical transition matrix.}
+  \item{ci.fun}{A character vector specifying the transformation to be
+    applied to the pointwise confidence intervals. It could be different
+    for all transition probabilities, though if \code{length(ci.fun) !=
+      number of transitions}, only \code{ci.fun[1]} will be used. The
+    possible transformations are "linear", "log", "log-log" and
+    "cloglog". Default is "linear".}
+  \item{level}{Level of the two-sided confidence intervals. Default is
+    0.95.}
   \item{x}{A \code{summary.cpf} object}
   \item{\dots}{Further arguments}
 }
@@ -22,6 +31,8 @@
   possible transition.
   \item{P}{Transtion probability estimates}
   \item{var}{Variance estimates}
+  \item{lower}{Lower confidence limit}
+  \item{upper}{Upper confidence limit}
   \item{time}{Transition times}
   \item{n.risk}{Number of individuals at risk of experiencing a transition
     just before time t}

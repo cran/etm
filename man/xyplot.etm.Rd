@@ -7,8 +7,10 @@
   transitions specified by the user.
 }
 \usage{
-\S3method{xyplot}{etm}(x, data = NULL, tr.choice = "all", col = 1, lty = 1, xlab =
-"Time", ylab = "Estimated Transition probability", ...)
+\S3method{xyplot}{etm}(x, data = NULL, tr.choice = "all", col = c(1, 1, 1),
+       lty =c(1, 3, 3),  xlab = "Time",
+       ylab = "Estimated Transition probability",
+       conf.int = TRUE, ci.fun = "linear", level = 0.95, ...)
 }
 \arguments{
   \item{x}{An object of class \code{etm}.}
@@ -19,7 +21,18 @@
   \item{col}{Color of the curve.}
   \item{lty}{Type of the line.}
   \item{xlab}{x-axis label. Default is "Time".}
-  \item{ylab}{y-axis label. Default is "Estimated transition probability".}
+  \item{ylab}{y-axis label. Default is "Estimated transition
+    probability".}
+  \item{conf.int}{Logical. Whether to draw pointwise confidence
+    intervals. Default is TRUE.}
+  \item{ci.fun}{A character vector specifying the transformation to be
+    applied to the pointwise confidence intervals. It could be different
+    for all transition probabilities, though if \code{length(ci.fun) !=
+      length(tr.choice)}, only \code{ci.fun[1]} will be used. The
+    possible transformations are "linear", "log", "log-log" and
+    "cloglog". Default is "linear".}
+  \item{level}{Level of the two-sided confidence intervals. Default is
+    0.95.}
   \item{\dots}{Further arguments for \code{xyplot}.}
 }
 \value{
