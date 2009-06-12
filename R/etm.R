@@ -65,7 +65,8 @@ var.aj <- function(est, dna, nrisk, nev, times, first, last) {
 ### etm ###
 ###########      
       
-etm <- function(data, state.names, tra, cens.name, s, t="last", covariance=TRUE) {
+etm <- function(data, state.names, tra, cens.name, s, t="last",
+                covariance=TRUE, delta.na = TRUE) {
     if (missing(data))
         stop("Argument 'data' is missing with no default")
     if (missing(tra))
@@ -209,6 +210,10 @@ etm <- function(data, state.names, tra, cens.name, s, t="last", covariance=TRUE)
             dimnames(var) <- list(pos, pos, est$time)
         }
         else var <- NULL
+        if (delta.na) {
+            delta.na <- dna[, , first:last]
+        }
+        else delta.na <- NULL
         nrisk <- nrisk[first:last, ]
         nev <- nev[, , first:last]
         dimnames(est$est) <- list(state.names, state.names, est$time)
@@ -218,7 +223,7 @@ etm <- function(data, state.names, tra, cens.name, s, t="last", covariance=TRUE)
     nrisk <- nrisk[, !(colnames(nrisk) %in% setdiff(unique(trans$to), unique(trans$from))), drop = FALSE]
     res <- list(est = est$est, cov = var, time = est$time, s =s, t = t,
                 trans = trans, state.names = state.names, cens.name = cens.name,
-                n.risk = nrisk, n.event = nev)
+                n.risk = nrisk, n.event = nev, delta.na = delta.na)
     class(res) <- "etm"
     res
 }

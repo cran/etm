@@ -1,3 +1,21 @@
+2009-6-12 Arthur Allignol <arthur.allignol@fdm.uni-freiburg.de>
+
+* New plot function for clos.etm objects
+
+2009-6-9 Arthur Allignol <arthur.allignol@fdm.uni-freiburg.de>
+
+* New aw argument to clos. Whether use alternative weighting
+	to compute the expected change in LOS
+* Implementation of the alternative weighting
+	
+2009-6-8 Arthur Allignol <arthur.allignol@fdm.uni-freiburg.de>
+
+* New argument to etm: delta.na which decides whether to include in
+	the output the increments of the Nelson-Aalen estimator
+* Implementation of the Change of Length of Stay following changeLOS 
+	package. Though here, it works with left-truncated data, and 
+	doesn't require competing outcomes
+	
 2009-4-9 Arthur Allignol <arthur.allignol@fdm.uni-freiburg.de>
 	
 * New internal function ci.transfo() that transforms etm objects and computes pointwise CIs
@@ -16,7 +34,7 @@
 2008-12-9 Arthur Allignol <arthur.allignol@fdm.uni-freiburg>
 
 * Modification of print and summary
-new arguments
+	new arguments
 * cov.dna now in C
 
 2008-11-19 Arthur Allignol <arthur.allignol@fdm.uni-freiburg.de>
@@ -30,8 +48,8 @@ new arguments
 * Bug correction: now works when there is only 1 transient state.
 * Modification of the part which transforms the data into counting process
 * Modification of the C++ routine
-that is now faster nd computes the increments
-of the Nelson-Aalen estimator
+	that is now faster nd computes the increments
+	of the Nelson-Aalen estimator
 * Add a plot function
 		
 	

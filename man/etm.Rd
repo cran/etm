@@ -9,7 +9,7 @@
 }
 \usage{
 etm(data, state.names, tra, cens.name, s, t = "last",
-    covariance = TRUE)
+    covariance = TRUE, delta.na = TRUE)
 }
 \arguments{
   \item{data}{ data.frame of the form data.frame(id,from,to,time)
@@ -38,6 +38,8 @@ etm(data, state.names, tra, cens.name, s, t = "last",
   \item{covariance}{Logical. Decide whether or not computing the
     covariance matrix. May be useful for, say, simulations, as the variance
     computation is a bit long. Default is TRUE.}
+  \item{delta.na}{Logical. Whether to export the array containing the
+    increments of the Nelson-Aalen estimator. Default is \code{TRUE}.}
 }
 \details{
   Data are considered to arise from a time-inhomogeneous Markovian
@@ -82,7 +84,10 @@ etm(data, state.names, tra, cens.name, s, t = "last",
     set.}
   \item{n.risk}{Matrix indicating the number of individuals at risk just
     before an event}
-  \item{n.event}{Array containing the number of transitions at each event times}
+  \item{n.event}{Array containing the number of transitions at each
+    event times}
+  \item{delta.na}{A 3d array containing the increments of the
+    Nelson-Aalen estimator.}
 }
 \references{Andersen, P.K., Borgan, O., Gill, R.D. and Keiding,
   N. (1993). \emph{Statistical models based on counting
