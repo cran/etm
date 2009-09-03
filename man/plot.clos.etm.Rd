@@ -18,7 +18,7 @@ legend.bty = "n", ...)
   \item{xlab}{Label for the x-axis}
   \item{ylab.e}{Label for the y-axis in the plot of the expected LOS}
   \item{ylab.w}{Label for the y-axis in the plot of the weights}
-  \item{xlim}{Limits of x_axes for the plots}
+  \item{xlim}{Limits of x-axis for the plots}
   \item{ylim.e}{Limits of the y-axis for the expected LOS plot}
   \item{ylim.w}{Limits of the y-axis for the weights plot}
   \item{col.e}{Vector of colours for the plot of expected LOS}
@@ -37,12 +37,12 @@ legend.bty = "n", ...)
 }
 \details{
   Two graphs are drawn. The lower graph displays the expected LOS for
-  patients who have experienced the intermediate event, and those who
+  patients who have experienced the intermediate event and for those who
   have not. The upper graph displays the weights used to compute
-  weighted average.
+  the weighted average.
 }
 \value{
-  No value returnes
+  No value returned
 }
 \author{
   Arthur Allignol \email{arthur.allignol@fdm.uni-freiburg.de}, Matthias Wangler

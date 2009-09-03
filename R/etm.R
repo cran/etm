@@ -4,8 +4,7 @@ prodint <- function(dna, times, first, last) {
     if (first >= last) {
         est <- array(I, dim=c(dim(dna)[c(1, 2)], 1))
         time <- NULL
-    }
-    else {
+    } else {
         est <- array(0, dim=c(dim(dna)[c(1, 2)], (last-first+1)))
         est[, , 1] <- I + dna[, , first]
         j <- 2
@@ -31,8 +30,7 @@ var.aj <- function(est, dna, nrisk, nev, times, first, last) {
     d <- dim(nev)[1]
     if (first >= last) {
         return(NULL)
-    }
-    else {
+    } else {
         out <- array(0, dim=c(dim(dna)[c(1, 2)]^2, (last-first+1)))
         cov.dna <- matrix(.C(cov_dna,
                              as.double(nrisk[first, ]),
@@ -67,6 +65,7 @@ var.aj <- function(est, dna, nrisk, nev, times, first, last) {
       
 etm <- function(data, state.names, tra, cens.name, s, t="last",
                 covariance=TRUE, delta.na = TRUE) {
+    
     if (missing(data))
         stop("Argument 'data' is missing with no default")
     if (missing(tra))
@@ -100,6 +99,7 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
             stop("The name of the censoring variable just is a name of the model states.")
         }
     }
+    
 ### transitions
     colnames(tra) <- rownames(tra) <- state.names
     t.from <- lapply(1:dim(tra)[2], function(i) {
@@ -116,15 +116,18 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
     test <- unique(paste(data$from, data$to))
     if (!(is.null(cens.name))) {
         ref <- c(paste(trans$from, trans$to), paste(unique(trans$from), cens.name))
+    } else {
+        ref <- paste(trans$from, trans$to)
     }
-    else { ref <- paste(trans$from, trans$to) }
     if (!(all(test %in% ref)==TRUE))
         stop("There is undefined transitions in the data set")
     if (sum(as.character(data$from)==as.character(data$to)) > 0)
         stop("Transitions into the same state are not allowed")
     if (!(all(ref %in% test) == TRUE))
         warning("You may have specified more possible transitions than actually present in the data")
+    
 ### data.frame transformation
+    data$id <- if (is.character(data$id)) as.factor(data$id) else data$id
     data$from <- as.factor(data$from)
     data$to <- as.factor(data$to)
     if (!(is.null(cens.name))) {
@@ -132,28 +135,29 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
         levels(data$from) <- 0:length(state.names)
         data$to <- factor(data$to, levels = c(cens.name, state.names), ordered = TRUE)
         levels(data$to) <- 0:length(state.names)
-    }
-    else{
+    } else{
         data$from <- factor(data$from, levels = state.names, ordered = TRUE)
         levels(data$from) <- 1:length(state.names)
         data$to <- factor(data$to, levels = state.names, ordered = TRUE)
         levels(data$to) <- 1:length(state.names)
     }
+    
 ### if not, put like counting process data
     if ("time" %in% names(data)) {
         data <- data[order(data$id, data$time), ]
+        idd <- as.integer(data$id)
         entree <- double(length(data$time))
-        masque <- rbind(1, apply(as.matrix(data$id), 2, diff))
+        masque <- rbind(1, apply(as.matrix(idd), 2, diff))
         entree <- c(0, data$time[1:(length(data$time) - 1)]) * (masque == 0)
         data <- data.frame(id = data$id, from = data$from,
                            to = data$to, entry = entree, exit = data$time)
         if (sum(data$entry < data$exit) != nrow(data))
             stop("Exit time from a state must be > entry time")
-    }
-    else {
+    } else {
         if (sum(data$entry < data$exit) != nrow(data))
             stop("Exit time from a state must be > entry time")
     }
+    
 ### Computation of the risk set and dN
     ttime <- c(data$entry, data$exit)
     times <- sort(unique(ttime))
@@ -172,6 +176,7 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
                ncens=integer(dim(tra)[1] * length(times)),
                nev=integer(dim(tra)[1] * dim(tra)[2] * length(times)),
                dna=double(dim(tra)[1] * dim(tra)[2] * length(times)))
+    
     nrisk <- matrix(temp$nrisk, ncol=dim(tra)[1], nrow=length(times))
     ncens <- matrix(temp$ncens, ncol=dim(tra)[1], nrow=length(times))
     nev <- array(temp$nev, dim=c(dim(tra), length(times)))
@@ -181,6 +186,7 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
         dna[cbind(ii, ii, i)] <- -(.Internal(rowSums(nev[, , i], dim(nev)[1], dim(nev)[1], FALSE))/nrisk[i, ])
     }
     dna[is.nan(dna)] <- 0
+    
 ### computation of the Aalen-Johansen estimator
     if (t=="last") t <- times[length(times)]
     if (!(0 <= s & s < t))
@@ -189,6 +195,7 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
         stop("'s' or 't' is an invalid time")
     first <- length(times[times <= s]) + 1
     last <- length(times[times <= t])
+    
     if (first >= last) {
         est <- list()
         est$est <- array(diag(1, dim(tra)[1], dim(tra)[2]), c(dim(tra), 1))
@@ -197,8 +204,7 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
         var <- NULL
         nrisk <- matrix(nrisk[last, ], 1, dim(tra)[1])
         nev <- array(0, dim(tra))
-    }
-    else {
+    } else {
         est <- prodint(dna, times, first, last)
         ##
         if (covariance == TRUE) {
@@ -219,8 +225,10 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
         dimnames(est$est) <- list(state.names, state.names, est$time)
         dimnames(nev) <- list(state.names, state.names, est$time)
     }
+    
     colnames(nrisk) <- state.names
     nrisk <- nrisk[, !(colnames(nrisk) %in% setdiff(unique(trans$to), unique(trans$from))), drop = FALSE]
+    
     res <- list(est = est$est, cov = var, time = est$time, s =s, t = t,
                 trans = trans, state.names = state.names, cens.name = cens.name,
                 n.risk = nrisk, n.event = nev, delta.na = delta.na)

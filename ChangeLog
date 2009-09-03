@@ -1,3 +1,30 @@
+2009-8-21 Arthur Allignol <arthur.allignol@fdm.uni-freiburg.de>
+
+* Bug fix: in clos.cp and clos.nocp, O's were not in the right place for computing
+the weighted summary when P(X_s = 1) . P(X_s = 0) = 0
+
+2009-7-30 Arthur Allignol <arthur.allignol@fdm.uni-freiburg.de>
+
+* print.etm and print.summary.etm now return nothing,
+while before they returned x with the invisible flag set
+
+* Choice of the transformation for the confidence intervals 
+in the avec.cov function is now done with switch instead of
+using several ifs
+
+* Bug correction: Tests on the tr.choice argument in xyplot,
+trprob and trcov methods was done comparing it to the rownames
+of the covariance matrix, which didn't make sense when etm was 
+called with argument covariance set to FALSE, and thrown an error
+even if tr.choice was good.
+
+2009-7-28 Arthur Allignol <arthur.allignol@fdm.uni-freiburg.de>
+
+* New function etmprep that transform data in the wide format
+into the long format, in a way suitable for using the etm function.
+
+* New generics trprob and trcov and methods for etm objects.
+
 2009-6-12 Arthur Allignol <arthur.allignol@fdm.uni-freiburg.de>
 
 * New plot function for clos.etm objects

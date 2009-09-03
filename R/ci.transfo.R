@@ -13,22 +13,23 @@ avec.cov <- function(i, object, transfo, trs.sep, trs, level) {
     n.risk <- object$n.risk[, trs.sep[i, 1]]
     var <- object$cov[trs[[i]], trs[[i]], ]
     alpha <- qnorm(level + (1 - level) / 2)
-    if (transfo[i] == "linear") {
-        lower <- P - alpha * sqrt(var)
-        upper <- P + alpha * sqrt(var)
-    }
-    if (transfo[i] == "log") {
-        lower <- exp(log(P) - alpha * sqrt(var) / P)
-        upper <- exp(log(P) + alpha * sqrt(var) / P)
-    }
-    if (transfo[i] == "cloglog") {
-        lower <- 1 - (1 - P)^(exp(alpha * (sqrt(var) / ((1 - P) * log(1 - P)))))
-        upper <- 1 - (1 - P)^(exp(-alpha * (sqrt(var) / ((1 - P) * log(1 - P)))))
-    }
-    if (transfo[i] == "log-log") {
-        lower <- P^(exp(-alpha * (sqrt(var) / (P * log(P)))))
-        upper <- P^(exp(alpha * (sqrt(var) / (P * log(P)))))
-    }
+    switch(transfo[i],
+           "linear" = {
+               lower <- P - alpha * sqrt(var)
+               upper <- P + alpha * sqrt(var)
+           },
+           "log" = {
+               lower <- exp(log(P) - alpha * sqrt(var) / P)
+               upper <- exp(log(P) + alpha * sqrt(var) / P)
+           },
+           "cloglog" = {
+               lower <- 1 - (1 - P)^(exp(alpha * (sqrt(var) / ((1 - P) * log(1 - P)))))
+               upper <- 1 - (1 - P)^(exp(-alpha * (sqrt(var) / ((1 - P) * log(1 - P)))))
+           },
+           "log-log" = {
+               lower <- P^(exp(-alpha * (sqrt(var) / (P * log(P)))))
+               upper <- P^(exp(alpha * (sqrt(var) / (P * log(P)))))
+           })
     lower <- pmax(lower, 0)
     upper <- pmin(upper, 1)
     data.frame(P, time, var, lower, upper, n.risk, n.event)

@@ -16,5 +16,5 @@ print.summary.etm <- function(x, ...) {
             cat("\n")
         }
     }
-    invisible(x)
+    invisible()
 }

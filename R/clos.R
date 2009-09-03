@@ -8,6 +8,7 @@ clos.cp <- function(x, tr.mat, aw) {
                    ncol=3, byrow=FALSE)
     ind.cens <- apply(x$n.event, 3, function(r) all(r == 0))
     tau <- max(x$time[ind.cens], x$time)
+    
     out <- .C(los_cp,
               as.double(x$time),
               as.double(tr.mat),
@@ -21,6 +22,7 @@ clos.cp <- function(x, tr.mat, aw) {
               phi3case    = as.double(phi3[,2]),
               phi3control = as.double(phi3[,3]),
               as.double(tau))
+    
     los[, 2] <- out$los0
     los[, 3] <- out$los1
     phi2[, 3] <- out$phi2case; phi2[, 2] <- out$phi2control
@@ -29,14 +31,21 @@ clos.cp <- function(x, tr.mat, aw) {
     wait.times <- x$time[indi]
     wait.prob <- x$est["0", "0", ][indi]
     my.weights <- diff(c(0, 1 - wait.prob))
+    
+    pp <- x$n.risk[-1, ]
+    ev.last <- apply(x$n.event[, , dims[3]], 1, sum)[1:2]
+    pp <- rbind(pp, pp[nrow(pp), ] - ev.last)
+    filtre <- pp[, 1] <= 0 | pp[, 2] <= 0
+    
     tmp <- list(los, phi2, phi3)
     estimates <- lapply(tmp, function(z) {
         ldiff <- z[, 3] - z[, 2]
-        ldiff[(x$n.risk[, 1] == 0) | (x$n.risk[, 2] == 0)] <- 0
+        ldiff[filtre] <- 0
         estimate <- matrix(ldiff[is.element(z[, 1], wait.times)], nrow = 1) %*%
             matrix(my.weights, ncol=1)
         estimate
     })
+    
     e.phi.w1 <- e.phi.w23 <- my.weights1 <- my.weights23 <- NULL
     if (aw) {
         cif1 <- cumsum(c(1, x$est["0", "0", 1:(dims[3] - 1)]) * tr.mat[1, 2, ])
@@ -47,7 +56,7 @@ clos.cp <- function(x, tr.mat, aw) {
         weights.aw <- list(my.weights1, my.weights23)
         estimates.aw <- lapply(weights.aw, function(z) {
             ldiff <- los[, 3] - los[, 2]
-            ldiff[(x$n.risk[, 1] == 0) | (x$n.risk[, 2] == 0)] <- 0
+            ldiff[filtre] <- 0
             estimate <- matrix(ldiff[is.element(los[, 1], wait.times)], nrow = 1) %*%
                 matrix(z, ncol = 1)
             estimate
@@ -55,6 +64,7 @@ clos.cp <- function(x, tr.mat, aw) {
         e.phi.w1 <- estimates.aw[[1]]
         e.phi.w23 <- estimates.aw[[2]]
     }
+    
     res <- list(e.phi = estimates[[1]], phi.case = los[, 3],
                 phi.control = los[, 2], e.phi2 = estimates[[2]],
                 phi2.case = phi2[, 3], phi2.control = phi2[, 2],
@@ -72,6 +82,7 @@ clos.nocp <- function(x, tr.mat, aw) {
     dims <- dim(x$est)
     los <- matrix(rep(x$time, 3), ncol = 3, byrow = FALSE)
     tau <- max(x$time)
+    
     out <- .C(los_nocp,
               as.double(x$time),
               as.double(tr.mat),
@@ -81,16 +92,24 @@ clos.nocp <- function(x, tr.mat, aw) {
               los1 = as.double(los[,2]),
               los0 = as.double(los[,3]),
               as.double(tau))
+    
     los[, 2] <- out$los0
     los[, 3] <- out$los1
     indi <- apply(x$n.event, 3, function(x) {sum(x[1, ]) != 0})
     wait.times <- x$time[indi]
     wait.prob <- x$est["0", "0", ][indi]
+
+    pp <- x$n.risk[-1, ]
+    ev.last <- apply(x$n.event[, , dims[3]], 1, sum)[1:2]
+    pp <- rbind(pp, pp[nrow(pp), ] - ev.last)
+    filtre <- pp[, 1] <= 0 | pp[, 2] <= 0
+    
     los.diff <- los[, 3] - los[, 2]
-    los.diff[(x$n.risk[, 1] == 0) | (x$n.risk[, 2] == 0)] <- 0
+    los.diff[filtre] <- 0
     my.weights <- diff(c(0, 1 - wait.prob))
     estimate <- matrix(los.diff[is.element(los[, 1], wait.times)], nrow = 1) %*%
         matrix(my.weights, ncol=1)
+    
     e.phi.w1 <- e.phi.w2 <- my.weights1 <- my.weights2 <- NULL
     if (aw) {
         cif1 <- cumsum(c(1, x$est["0", "0", 1:(dims[3] - 1)]) * tr.mat[1, 2, ])
@@ -100,7 +119,7 @@ clos.nocp <- function(x, tr.mat, aw) {
         weights.aw <- list(my.weights1, my.weights2)
         estimates.aw <- lapply(weights.aw, function(z) {
             ldiff <- los[, 3] - los[, 2]
-            ldiff[(x$n.risk[, 1] == 0) | (x$n.risk[, 2] == 0)] <- 0
+            ldiff[filtre] <- 0
             estimate <- matrix(ldiff[is.element(los[, 1], wait.times)], nrow = 1) %*%
                 matrix(z, ncol = 1)
             estimate
@@ -108,6 +127,7 @@ clos.nocp <- function(x, tr.mat, aw) {
         e.phi.w1 <- estimates.aw[[1]]
         e.phi.w2 <- estimates.aw[[2]]
     }
+    
     res <- list(e.phi = estimate[[1]], phi.case = los[, 3],
                 phi.control = los[, 2], weights = my.weights,
                 w.time = wait.times, time = x$time, e.phi.weights.1 = e.phi.w1,

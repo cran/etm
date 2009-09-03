@@ -17,9 +17,9 @@
   \item{data}{\emph{Useless}.}
   \item{tr.choice}{A character vector of the form c("from to", "from
     to", ...) specifying the transition probabilities to be plotted. By
-    default, all the transition probabilities are displayed.}
-  \item{col}{Color of the curve.}
-  \item{lty}{Type of the line.}
+    default, all the direct transition probabilities are displayed.}
+  \item{col}{Vector of colours for the curves.}
+  \item{lty}{Vector of line types.}
   \item{xlab}{x-axis label. Default is "Time".}
   \item{ylab}{y-axis label. Default is "Estimated transition
     probability".}
@@ -27,8 +27,12 @@
     intervals. Default is TRUE.}
   \item{ci.fun}{A character vector specifying the transformation to be
     applied to the pointwise confidence intervals. It could be different
-    for all transition probabilities, though if \code{length(ci.fun) !=
+    for each transition probability, though if \code{length(ci.fun) !=
       length(tr.choice)}, only \code{ci.fun[1]} will be used. The
+    function displays the transition probabilities in the following
+    order: first the direct transitions in alphabetical order, e.g., 0 to
+    1, 0 to 2, 1 to 2, ..., then the state occupation probabilities in
+    alphabetical order, e.g., 0 to 0, 1 to 1, ... The
     possible transformations are "linear", "log", "log-log" and
     "cloglog". Default is "linear".}
   \item{level}{Level of the two-sided confidence intervals. Default is

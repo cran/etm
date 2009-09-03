@@ -22,7 +22,7 @@
     t))}{cov(P(s, t))}.
 }
 \value{
-  \code{x}, with the invisible flag set.
+  No value returned
 }
 \author{Arthur Allignol, \email{arthur.allignol@fdm.uni-freiburg.de}}
 \seealso{\code{\link{etm}}}

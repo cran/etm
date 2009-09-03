@@ -22,7 +22,7 @@ print.etm <- function(x, covariance = TRUE, whole = TRUE, ...) {
             print(cova)
         }
     }
-    invisible(x)
+    invisible()
 }
     
     

@@ -35,7 +35,7 @@ data(sir.cont)
   (combined endpoint discharge/death). Ventilation status is considered
   as a transcient state in an illness-death model. 
 
-  The data frame is directly formated to be used with the \code{mvna}
+  The data frame is directly formated to be used with the \code{etm}
   function, i.e. it is transition-oriented with one row per transition.
 }
 

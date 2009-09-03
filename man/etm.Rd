@@ -34,7 +34,7 @@ etm(data, state.names, tra, cens.name, s, t = "last",
   \item{s}{Starting value for computing the transition probabilities.}
   \item{t}{Ending value. Default is "last", meaning that the transition
     probabilities are computed over \eqn{(s, t]}{(s, t]}, \eqn{t}{t}
-    being the last event time in the data set.}
+    being the last time in the data set.}
   \item{covariance}{Logical. Decide whether or not computing the
     covariance matrix. May be useful for, say, simulations, as the variance
     computation is a bit long. Default is TRUE.}
@@ -75,7 +75,7 @@ etm(data, state.names, tra, cens.name, s, t = "last",
     the covariance between the transition probabilities given by the
     rownames and the colnames, respectively.}
   \item{time}{Event times at which the transition probabilities are
-  computed. That is all the observed event times between \eqn{(s, t]}{(s, t]}.}
+  computed. That is all the observed times between \eqn{(s, t]}{(s, t]}.}
   \item{s}{Start of the time interval.}
   \item{t}{End of the time interval.}
   \item{trans}{A \code{data.frame} giving the possible transitions.}
@@ -85,7 +85,7 @@ etm(data, state.names, tra, cens.name, s, t = "last",
   \item{n.risk}{Matrix indicating the number of individuals at risk just
     before an event}
   \item{n.event}{Array containing the number of transitions at each
-    event times}
+    times}
   \item{delta.na}{A 3d array containing the increments of the
     Nelson-Aalen estimator.}
 }
@@ -157,7 +157,7 @@ xyplot(tr.prob, tr.choice=c("0 0", "1 1", "0 1", "0 2", "1 0", "1 2"),
 
 data(abortion)
 
-# Data set modification in order to be used by mvna
+# Data set modification in order to be used by etm
 names(abortion) <- c("id", "entry", "exit", "from", "to")
 abortion$to <- abortion$to + 1
 
@@ -173,8 +173,8 @@ xyplot(fit, tr.choice = c("0 0", "1 1", "0 4", "1 4"),
        ci.fun = c("log-log", "log-log", "cloglog", "cloglog"),
        strip = strip.custom(factor.levels = c("P(T > t) -- control",
                                               "P(T > t) -- exposed",
-                                 "Spontaneous abortion -- control",
-                                 "Spontaneous abortion -- exposed")))
+                                 "CIF spontaneous abortion -- control",
+                                 "CIF spontaneous abortion -- exposed")))
 }
 
 \keyword{survival}
