@@ -1,10 +1,10 @@
-plot.etm <- function(x, tr.choice, xlab = "Time", ylab = "Transition Probability",
-                     col = 1, lty, xlim, ylim, conf.int = FALSE, level = 0.95,
-                     ci.fun = "linear", ci.col = col, ci.lty = 3,
-                     legend = TRUE, legend.pos, curvlab, legend.bty = "n", ...) {
-    
-    if (!inherits(x, "etm"))
-        stop("'x' must be a 'etm' object")
+lines.etm <- function(x, tr.choice, col = 1, lty,
+                      conf.int = FALSE, level = 0.95, ci.fun = "linear",
+                      ci.col = col, ci.lty = 3, ...) {
+
+    if (!inherits(x, "etm")) {
+        stop("'x' must be of class 'etm'")
+    }
     
     ufrom <- unique(x$trans$from)
     uto <- unique(x$trans$to)
@@ -15,7 +15,7 @@ plot.etm <- function(x, tr.choice, xlab = "Time", ylab = "Transition Probability
                    nam2[!(nam2 %in% as.character(absorb))]),
              paste(x$trans$from, x$trans$to))
     if (missing(tr.choice)) tr.choice <- pos
-
+    
     ref <- sapply(1:length(x$state.names), function(i) {
         paste(x$state.names, x$state.names[i])
     })
@@ -24,7 +24,7 @@ plot.etm <- function(x, tr.choice, xlab = "Time", ylab = "Transition Probability
         stop("Argument 'tr.choice' and possible transitions must match")
 
     temp <- ci.transfo(x, tr.choice, level, ci.fun)
-
+    
     lt <- length(temp)
 
     if (missing(lty)) {
@@ -36,17 +36,7 @@ plot.etm <- function(x, tr.choice, xlab = "Time", ylab = "Transition Probability
     if (length(col) < lt)
         col <- col * rep(1, lt)
 
-    if (missing(xlim)) {
-        xlim <- c(0, max(sapply(temp, function(x) max(x$time))))
-    }
-    if (missing(ylim)) {
-        ylim <- c(0, 1)
-    }
-
-    plot(xlim, ylim, xlab = xlab, ylab = ylab,
-         xlim = xlim, ylim = ylim, type = "n", ...)
-
-    for (i in seq_len(lt)) {
+        for (i in seq_len(lt)) {
         lines(temp[[i]]$time, temp[[i]]$P, type = "s",
               col = col[i], lty = lty[i], ...)
     }
@@ -62,27 +52,6 @@ plot.etm <- function(x, tr.choice, xlab = "Time", ylab = "Transition Probability
             lines(temp[[i]]$time, temp[[i]]$upper, type = "s",
                   col = ci.col[i], lty = ci.lty[i], ...)
         }
-    }
-
-    if (legend) {
-        if (missing(legend.pos))
-            legend.pos <- "topleft"
-        if (missing(curvlab))
-            curvlab <- tr.choice
-        if (is.list(legend.pos)) legend.pos <- unlist(legend.pos)
-        if (length(legend.pos) == 1) {
-            xx <- legend.pos
-            yy <- NULL
-        }
-        if (length(legend.pos) == 2) {
-            xx <- legend.pos[1]
-            yy <- legend.pos[2]
-        }
-        args <- list(...)
-        ii <- pmatch(names(args),
-                     names(formals("legend")[-charmatch("bty",names(formals("legend")))]))
-        do.call("legend", c(list(xx, yy, curvlab, col=col, lty=lty, bty = legend.bty),
-                            args[!is.na(ii)]))
     }
     
     invisible()

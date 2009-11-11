@@ -7,9 +7,9 @@
   transitions specified by the user.
 }
 \usage{
-\S3method{xyplot}{etm}(x, data = NULL, tr.choice = "all", col = c(1, 1, 1),
-       lty =c(1, 3, 3),  xlab = "Time",
-       ylab = "Estimated Transition probability",
+\S3method{xyplot}{etm}(x, data = NULL, tr.choice, col = c(1, 1, 1),
+       lty = c(1, 3, 3),  xlab = "Time",
+       ylab = "Transition probability",
        conf.int = TRUE, ci.fun = "linear", level = 0.95, ...)
 }
 \arguments{
@@ -29,10 +29,6 @@
     applied to the pointwise confidence intervals. It could be different
     for each transition probability, though if \code{length(ci.fun) !=
       length(tr.choice)}, only \code{ci.fun[1]} will be used. The
-    function displays the transition probabilities in the following
-    order: first the direct transitions in alphabetical order, e.g., 0 to
-    1, 0 to 2, 1 to 2, ..., then the state occupation probabilities in
-    alphabetical order, e.g., 0 to 0, 1 to 1, ... The
     possible transformations are "linear", "log", "log-log" and
     "cloglog". Default is "linear".}
   \item{level}{Level of the two-sided confidence intervals. Default is
