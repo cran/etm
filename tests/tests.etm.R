@@ -83,6 +83,33 @@ summ.sir <- summary(prob.sir)
 all.equal(summ.sir[[1]]$P, as.vector(trprob(prob.sir, "0 1")))
 summ.sir[[2]]
 
+## gonna play a bit with the state names
+dd <- sir.cont
+dd$from <- ifelse(dd$from == 0, "initial state", "ventilation")
+dd$to <- as.character(dd$to)
+for (i in seq_len(nrow(dd))) {
+    dd$to[i] <- switch(dd$to[i],
+                    "0" = "initial state",
+                    "1" = "ventilation",
+                    "2" = "end of story",
+                    "cens" = "cens"
+                    )
+}
+
+test <- etm(dd, c("initial state", "ventilation", "end of story"), tra, "cens", 1)
+
+all.equal(test$est["initial state", "initial state", ],
+          prob.sir$est["0", "0", ])
+all.equal(trprob(test, "initial state initial state"), trprob(prob.sir, "0 0"))
+all.equal(trprob(test, "initial state ventilation"), trprob(prob.sir, "0 1"))
+all.equal(trprob(test, "initial state end of story"), trprob(prob.sir, "0 2"))
+
+all.equal(trcov(test, "initial state end of story"), trcov(prob.sir, "0 2"))
+
+aa <- summary(test)
+all.equal(summ.sir[[6]], aa[[6]])
+all.equal(summ.sir[[4]], aa[[4]])
+
 ### Test on abortion data
 
 data(abortion)

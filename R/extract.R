@@ -19,7 +19,13 @@ trprob.etm <- function(x, tr.choice, timepoints, ...) {
     pos <- matrix(pos)
     if (!(tr.choice %in% pos))
         stop("'tr.choice' not in the possible transitions")
-    trans.sep <- unlist(strsplit(tr.choice, " "))
+    trans.sep <- strsplit(tr.choice, " ")
+    if (length(trans.sep[[1]]) != 2) {
+        tt <- charmatch(trans.sep[[1]], x$state.names, nomatch = 0)
+        trans.sep[[1]] <- x$state.names[tt]
+    }
+    trans.sep <- unlist(trans.sep)
+
     if (missing(timepoints)) {
         tmp <- x$est[trans.sep[1], trans.sep[2], ]
     }

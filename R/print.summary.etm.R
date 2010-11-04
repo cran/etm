@@ -9,9 +9,9 @@ print.summary.etm <- function(x, ...) {
         time <- x[[1]]$time
         qtime <- quantile(time, probs = c(0, 0.25, 0.5, 0.75, 0.9, 1))
         ind <- findInterval(qtime, time)
-        namen <- strsplit(names(x), split = " ")
+            
         for (i in seq_along(x)) {
-            cat(paste("Transition", namen[[i]][1], "->", namen[[i]][2], "\n", sep = " "))
+            cat(paste("Transition", names(x)[i], "\n", sep = " "))
             print(x[[i]][ind, ], row.names = FALSE)
             cat("\n")
         }

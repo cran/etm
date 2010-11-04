@@ -1,3 +1,13 @@
+2010-11-3 Arthur Allignol <arthur.allignol@fdm.uni-freiburg.de>
+
+	* fourD : New data set
+	* etmCIF and methods print, summary, plot: New functions
+	Lead to add survival package in the dependencies
+	* etm: Fixed warning message when no censoring but still defined in the call
+	* etm and methods: Fix to deal with more complicated state names (e.g., 
+	with characters with spaces)
+	* vignette: A vignette on etmCIF has been added. Has a view towards CIFs for pregnancy data
+
 2009-11-11 Arthur Allignol <arthur.allignol@fdm.uni-freiburg.de>
 
 	* lines.etm: New function
