@@ -89,7 +89,12 @@ etm(data, state.names, tra, cens.name, s, t = "last",
   \item{delta.na}{A 3d array containing the increments of the
     Nelson-Aalen estimator.}
 }
-\references{Andersen, P.K., Borgan, O., Gill, R.D. and Keiding,
+\references{
+  Allignol, A., Schumacher, M. and Beyersmann, J. (2011).
+  Empirical Transition Matrix of Multi-State Models: The etm Package.
+  \emph{Journal of Statistical Software}, 38.
+
+  Andersen, P.K., Borgan, O., Gill, R.D. and Keiding,
   N. (1993). \emph{Statistical models based on counting
     processes}. Springer Series in Statistics. New York, NY: Springer.
   
