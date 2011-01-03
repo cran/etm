@@ -1,3 +1,8 @@
+2010-12-6 Arthur Allignol <arthur.allignol@fdm.uni-freiburg.de>
+
+	* New version 0.5-2
+	* sir.cont: Two new covariates age and sex
+
 2010-11-24 Arthur Allignol <arthur.allignol@fdm.uni-freiburg.de>
 
 	* New version number 0.5-1

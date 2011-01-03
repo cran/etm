@@ -51,6 +51,6 @@ plot.clos.etm <- function(x, xlab = "Time",
         do.call("legend", c(list(xx, yy, curvlab, col = col.e, lty = lty.e, bty = legend.bty),
                             args[!is.na(ii)]))
     }
-    close.screen(all = TRUE)
+    close.screen(all.screens = TRUE)
     invisible()
 }
