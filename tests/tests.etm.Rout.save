@@ -1,7 +1,8 @@
 
-R version 2.11.1 (2010-05-31)
-Copyright (C) 2010 The R Foundation for Statistical Computing
+R version 2.14.1 (2011-12-22)
+Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -444,14 +445,6 @@ Warning messages:
 > 
 > require(changeLOS)
 Loading required package: changeLOS
-load changeLOS:  /usr/local/lib/R/site-library ...
-
-Attaching package: 'changeLOS'
-
-The following object(s) are masked from 'package:etm':
-
-    clos
-
 > data(los.data) # in package changeLOS
 > 
 > ## putting los.data in the long format (see changeLOS)
@@ -592,30 +585,6 @@ Alternative weighting:
 
 Expected change in LOS with weight.1: 2.097 
 Expected change in LOS with weight.other: 1.951 
-> 
-> require(changeLOS)
-> my.model <- msmodel(c("0","1","2","3"),tra,cens.name="cens")
-> los <- clos(model=my.model,observ=my.observ, aw = TRUE)
-> 
-> all.equal(los$cLOS, cLOS$e.phi)
-[1] TRUE
-> all.equal(los$phi2, cLOS$e.phi2)
-[1] TRUE
-> all.equal(los$phi3, cLOS$e.phi3)
-[1] TRUE
-> all.equal(los$given.1, cLOS$e.phi.weights.1)
-[1] TRUE
-> all.equal(los$given.23, cLOS$e.phi.weights.other)
-[1] TRUE
-> 
-> tr.prob2 <- etm(my.observ, c("0","1","2","3"), tra, NULL, 0, cova = FALSE)
-> 
-> all.equal(trprob(tr.prob, "0 0"), trprob(tr.prob2, "0 0"))
-[1] TRUE
-> all.equal(trprob(tr.prob, "0 1"), trprob(tr.prob2, "0 1"))
-[1] TRUE
-> all.equal(trprob(tr.prob, "1 2"), trprob(tr.prob2, "1 2"))
-[1] TRUE
 > 
 > 
 > ### tests on etmprep

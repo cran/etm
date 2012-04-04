@@ -1,7 +1,7 @@
 #ifndef MATRIX
 #define MATRIX
 
-#include <iostream>
+/* #include <iostream> */
 #include <vector>
 
 #include <math.h>
@@ -32,7 +32,7 @@ public:
 
   Vector(double* v, const int n);
 
-  friend ostream& operator <<(ostream& s, const Vector& v);
+//  friend ostream& operator <<(ostream& s, const Vector& v);
 
   Vector operator +(const Vector& v);
 
@@ -76,7 +76,7 @@ public:
 
   Matrix(double* m, const int r,const int c);
 	
-  friend ostream& operator<<(ostream& s, const Matrix& m);
+/*  friend ostream& operator<<(ostream& s, const Matrix& m); */
 
   Matrix operator*(const Matrix& m);
 
@@ -115,7 +115,7 @@ class Array : public dArray
 
   friend Array operator*(const Array& a, const Matrix& m);
 
-  friend ostream& operator<<(ostream& s,Array a);
+  /* friend ostream& operator<<(ostream& s,Array a); */
  
   void as_double(double* a);
 

@@ -90,6 +90,9 @@ etm(data, state.names, tra, cens.name, s, t = "last",
     Nelson-Aalen estimator.}
 }
 \references{
+  Beyersmann J, Allignol A, Schumacher M: Competing Risks and Multistate
+  Models with R (Use R!), Springer Verlag, 2012 (Use R!)
+  
   Allignol, A., Schumacher, M. and Beyersmann, J. (2011).
   Empirical Transition Matrix of Multi-State Models: The etm Package.
   \emph{Journal of Statistical Software}, 38.

@@ -166,22 +166,6 @@ cLOS <- etm::clos(tr.prob, aw = TRUE)
 
 cLOS
 
-require(changeLOS)
-my.model <- msmodel(c("0","1","2","3"),tra,cens.name="cens")
-los <- clos(model=my.model,observ=my.observ, aw = TRUE)
-
-all.equal(los$cLOS, cLOS$e.phi)
-all.equal(los$phi2, cLOS$e.phi2)
-all.equal(los$phi3, cLOS$e.phi3)
-all.equal(los$given.1, cLOS$e.phi.weights.1)
-all.equal(los$given.23, cLOS$e.phi.weights.other)
-
-tr.prob2 <- etm(my.observ, c("0","1","2","3"), tra, NULL, 0, cova = FALSE)
-
-all.equal(trprob(tr.prob, "0 0"), trprob(tr.prob2, "0 0"))
-all.equal(trprob(tr.prob, "0 1"), trprob(tr.prob2, "0 1"))
-all.equal(trprob(tr.prob, "1 2"), trprob(tr.prob2, "1 2"))
-
 
 ### tests on etmprep
 

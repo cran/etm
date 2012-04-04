@@ -185,7 +185,8 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
     dna <- array(temp$dna, dim=c(dim(tra), length(times)))
     ii <- seq_len(dim(tra)[1])
     for (i in seq_along(times)) {
-        dna[cbind(ii, ii, i)] <- -(.Internal(rowSums(nev[, , i], dim(nev)[1], dim(nev)[1], FALSE))/nrisk[i, ])
+        ## dna[cbind(ii, ii, i)] <- -(.Internal(rowSums(nev[, , i], dim(nev)[1], dim(nev)[1], FALSE))/nrisk[i, ])
+        dna[cbind(ii, ii, i)] <- -(rowSums(nev[, , i])/nrisk[i, ])
     }
     dna[is.nan(dna)] <- 0
     

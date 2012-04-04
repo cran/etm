@@ -1,3 +1,9 @@
+2012-04-02 Arthur Allignol <arthur.allignol@fdm.uni-freiburg.de>
+
+	* new version 0.5-3
+	* clos: All references to the changeLOS package removed from the doc
+	* etm: removed the use of .internal()
+
 2010-12-6 Arthur Allignol <arthur.allignol@fdm.uni-freiburg.de>
 
 	* New version 0.5-2

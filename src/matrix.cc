@@ -16,23 +16,23 @@ Vector::Vector(double* v, const int n):dVector(){
     }
 }
 
-ostream& operator<<(ostream& s, const Vector& v) {
-    if( v.size() > 0 ) s << "(";
+// ostream& operator<<(ostream& s, const Vector& v) {
+//     if( v.size() > 0 ) s << "(";
     
-    for(int i=0;i<v.size();i++){
+//     for(int i=0;i<v.size();i++){
 	
-	s << v[i] ;
+// 	s << v[i] ;
 	
-	if( i < (v.size()-1) ) {
-	    s << ", ";
-	}
-	else {
-	    s << ")"<<endl;
-	}
-    }
+// 	if( i < (v.size()-1) ) {
+// 	    s << ", ";
+// 	}
+// 	else {
+// 	    s << ")"<<endl;
+// 	}
+//     }
     
-    return s;
-}
+//     return s;
+// }
 
 Vector operator*(double x, const Vector& v) {
     int i;
@@ -52,9 +52,9 @@ Vector Vector::operator +(const Vector& v) {
     int i;
     
     if( this->size() != v.size()) {
-	cout << "VECTOR Error: You're trying to add vectors of different sizes\n";
-	cout << v << endl;;
-	cout << *this << endl;
+	// cout << "VECTOR Error: You're trying to add vectors of different sizes\n";
+	// cout << v << endl;;
+	// cout << *this << endl;
 	
 	return Vector();
     }
@@ -68,9 +68,9 @@ Vector Vector::operator -(const Vector& v) {
     int i;
     
     if( this->size() != v.size()) {
-	cout << "VECTOR Error: You're trying to subtract vectors of different sizes\n";
-	cout << v << endl;;
-	cout << *this << endl;
+	// cout << "VECTOR Error: You're trying to subtract vectors of different sizes\n";
+	// cout << v << endl;;
+	// cout << *this << endl;
 	
 	return Vector();
     }
@@ -85,9 +85,9 @@ Vector Vector::operator*(const Vector& v) {
     int i;
     
     if( this->size() != v.size()) {
-	cout << "VECTOR Error: You're trying to multiply vectors of different sizes\n";
-	cout << v << endl;;
-	cout << *this << endl;
+	// cout << "VECTOR Error: You're trying to multiply vectors of different sizes\n";
+	// cout << v << endl;;
+	// cout << *this << endl;
 	
 	return Vector();
     }
@@ -103,9 +103,9 @@ double scalar(const Vector& v1, const Vector& v2) {
     double p = 0.0;
 
     if( v1.size() != v2.size()) {
-	cout << "VECTOR Error: You're trying to multiply vectors of different sizes\n";
-	cout << v1 << endl;;
-	cout << v2 << endl;
+	// cout << "VECTOR Error: You're trying to multiply vectors of different sizes\n";
+	// cout << v1 << endl;;
+	// cout << v2 << endl;
 	
 	return p;
     }
@@ -200,11 +200,11 @@ Matrix::Matrix(double* m, const int r, const int c)
     }
 }
 
-ostream& operator<<(ostream& s,const Matrix& m)
-{
-    for(int i=0; i<m.size();i++) s << m[i];
-    return s;
-}
+// ostream& operator<<(ostream& s,const Matrix& m)
+// {
+//     for(int i=0; i<m.size();i++) s << m[i];
+//     return s;
+// }
 
 
 Matrix Matrix::operator*(const Matrix& m)
@@ -216,8 +216,8 @@ Matrix Matrix::operator*(const Matrix& m)
     int m_cols = (m.at(0)).size();
     
     if(cols != m_rows) {	
-	cout << "MATRIX Error: Matrix Matrix::operator*(const Matrix& m):" << endl;		
-	cout << "matrices are the wrong size: " << cols << ", " << m_rows << endl;
+	// cout << "MATRIX Error: Matrix Matrix::operator*(const Matrix& m):" << endl;		
+	// cout << "matrices are the wrong size: " << cols << ", " << m_rows << endl;
     
 	return Matrix();
     }
@@ -244,7 +244,7 @@ Vector Matrix::operator*(const Vector& v)
 
     
     if(cols != v.size()) {			
-	cout << "MATRIX Error: multiplying matrix times Vector with wrong sizes\n";    
+	// cout << "MATRIX Error: multiplying matrix times Vector with wrong sizes\n";    
 	return Vector();
     }
 	
@@ -303,7 +303,7 @@ Matrix Matrix::operator+(const Matrix& m)
 
 	
     if(rows!= m_rows || cols != m_cols) {
-	cout << "MATRIX Error: you're trying to add matrices of different sizes\n";
+	// cout << "MATRIX Error: you're trying to add matrices of different sizes\n";
 	return Matrix();	
     }
 	
@@ -328,7 +328,7 @@ Matrix Matrix::operator-(const Matrix& m)
 
 	
     if(rows!= m_rows || cols != m_cols) {
-	cout << "MATRIX Error: you're trying to add matrices of different sizes\n";
+	// cout << "MATRIX Error: you're trying to add matrices of different sizes\n";
 	return Matrix();	
     }
 	
@@ -371,7 +371,7 @@ void Matrix::identity(void)
 
 	
     if(rows!=cols) {		
-	cout << "MATRIX Error: Matrix::identity(): Matrix not square\n";	
+	// cout << "MATRIX Error: Matrix::identity(): Matrix not square\n";	
     }
 
 	
@@ -435,14 +435,14 @@ Array::Array(double*a, const int rows, const int cols, const int len)
     }
 }
 
-ostream& operator<<(ostream& s, Array a)
-{
-    for(int i=0; i<a.size();i++) {         
-	s << a[i] << endl;
-    }
+// ostream& operator<<(ostream& s, Array a)
+// {
+//     for(int i=0; i<a.size();i++) {         
+// 	s << a[i] << endl;
+//     }
 	
-    return s;
-}
+//     return s;
+// }
 
 void  Array::as_double(double* a)
 {

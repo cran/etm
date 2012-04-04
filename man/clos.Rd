@@ -3,11 +3,7 @@
 \title{Change in Length of Stay}
 \description{
   The function estimates the expected change in length of stay (LOS)
-  associated with an intermediate event in the same way as does the
-  \code{\link[changeLOS]{clos}} function in the \pkg{changeLOS}
-  package. The difference between the 2 implementations is that this
-  function can handle left-truncated data, and does not require a
-  competing outcome.
+  associated with an intermediate event.
 }
 \usage{
 clos(x, aw = FALSE)
@@ -19,9 +15,20 @@ clos(x, aw = FALSE)
   \item{aw}{Logical. Whether to compute the expected change of LOS using
     alternative weighting. Default is \code{FALSE}.}
 }
+
 \details{
-  See \code{\link[changeLOS]{clos}} for more details on the method
+  The approach for evaluating the impact of an intermediate
+  event on the expected change in length of stay is based on Schulgen
+  and Schumacher (1996). They suggested to consider the difference of
+  the expected subsequent stay given infectious status at time s. 
+
+  Extensions to the methods of Schulgen and Schumacher and the earlier
+  implementation in the \pkg{changeLOS} include the possibility to
+  compute the extra length of stay both for competing endpoints and the
+  more simple case of one absorbing state, as well as the possibility to
+  compute this quantity for left-truncated data. 
 }
+
 \value{
   An object of class \code{clos.etm} with the following components:
   \item{e.phi}{Change in length of stay}
@@ -64,9 +71,30 @@ clos(x, aw = FALSE)
   \item{weights.other}{Weights corresponding to the conditional
     waiting time given one does not experience the intermediate event.} 
 }
+
+\references{
+  G Schulgen and M Schumacher (1996). Estimation of prolongation of
+  hospital stay attributable to nosocomial infections.  \emph{Lifetime
+  Data Analysis} 2, 219-240.
+
+  J Beyersmann, P Gastmeier, H Grundmann, S Baerwolf, C Geffers,
+  M Behnke, H Rueden, and M Schumacher (2006). Use of Multistate
+  Models to Assess Prolongation of Intensive Care Unit Stay Due to
+  Nosocomial Infection. \emph{Infection Control and Hospital
+    Epidemiology} 27, 493-499.
+
+  Allignol A, Schumacher M, Beyersmann J: Estimating summary functionals
+  in multistate models with an application to hospital infection
+  data. \emph{Computation Stat}, 2011; 26: 181-197.
+
+  M Wrangler, J Beyersmann and M Schumacher (2006). changeLOS: An
+  R-package for change in length of hospital stay based on the
+  Aalen-Johansen estimator. \emph{R News} 6(2), 31--35.
+}
+  
 \author{Arthur Allignol \email{arthur.allignol@fdm.uni-freiburg.de},
   Matthias Wangler, Jan Beyersmann}
-\seealso{\code{\link[changeLOS]{clos}}, \code{\link{etm}}}
+\seealso{\code{\link{etm}}}
 \examples{
 require(changeLOS)
 data(los.data) # in package changeLOS
