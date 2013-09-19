@@ -9,7 +9,8 @@
 }
 \usage{
 etm(data, state.names, tra, cens.name, s, t = "last",
-    covariance = TRUE, delta.na = TRUE)
+    covariance = TRUE, delta.na = TRUE, modif = FALSE,
+    alpha = 1/4, c = 1)
 }
 \arguments{
   \item{data}{ data.frame of the form data.frame(id,from,to,time)
@@ -40,6 +41,10 @@ etm(data, state.names, tra, cens.name, s, t = "last",
     computation is a bit long. Default is TRUE.}
   \item{delta.na}{Logical. Whether to export the array containing the
     increments of the Nelson-Aalen estimator. Default is \code{TRUE}.}
+  \item{modif}{Logical. Whether to apply the modification of Lai and
+    Ying for small risk sets}
+  \item{alpha}{Constant}
+  \item{c}{Constant}
 }
 \details{
   Data are considered to arise from a time-inhomogeneous Markovian
@@ -88,6 +93,8 @@ etm(data, state.names, tra, cens.name, s, t = "last",
     times}
   \item{delta.na}{A 3d array containing the increments of the
     Nelson-Aalen estimator.}
+  \item{ind.n.risk}{When \code{modif} is true, risk set size for which
+    the indicator function is 1}
 }
 \references{
   Beyersmann J, Allignol A, Schumacher M: Competing Risks and Multistate
@@ -117,7 +124,7 @@ etm(data, state.names, tra, cens.name, s, t = "last",
   Glidden, D. (2002). Robust inference for event probabilities with
   non-Markov data. \emph{Biometrics}, 58: 361-368.
 }
-\author{Arthur Allignol, \email{arthur.allignol@fdm.uni-freiburg.de}}
+\author{Arthur Allignol, \email{arthur.allignol@uni-ulm.de}}
 
 \note{Transitions into a same state, mathematically superfluous, are not
   allowed. If transitions into the same state are detected in the data,
@@ -156,10 +163,12 @@ tr.prob
 summary(tr.prob)
 
 # plotting
+if (require("lattice")) {
 xyplot(tr.prob, tr.choice=c("0 0", "1 1", "0 1", "0 2", "1 0", "1 2"),
        layout=c(2, 3), strip=strip.custom(bg="white",
          factor.levels=
      c("0 to 0", "1 to 1", "0 to 1", "0 to 2", "1 to 0", "1 to 2")))
+}
 
 ### example with left-truncation
 
@@ -182,7 +191,8 @@ xyplot(fit, tr.choice = c("0 0", "1 1", "0 4", "1 4"),
        strip = strip.custom(factor.levels = c("P(T > t) -- control",
                                               "P(T > t) -- exposed",
                                  "CIF spontaneous abortion -- control",
-                                 "CIF spontaneous abortion -- exposed")))
+                                 "CIF spontaneous abortion --
+exposed")))
 }
 
 \keyword{survival}

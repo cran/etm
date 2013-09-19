@@ -1,4 +1,4 @@
-prodint <- function(dna, times, first, last) {
+prodint <- function(dna, times, first, last, indi) {
     I <- array(0, dim=dim(dna)[c(1, 2)])
     diag(I) <- 1
     if (first >= last) {
@@ -6,10 +6,10 @@ prodint <- function(dna, times, first, last) {
         time <- NULL
     } else {
         est <- array(0, dim=c(dim(dna)[c(1, 2)], (last-first+1)))
-        est[, , 1] <- I + dna[, , first]
+        est[, , 1] <- I + dna[, , first] * indi[1]
         j <- 2
         for (i in (first + 1):last) {
-            est[, , j] <- est[, , j-1] %*% (I + dna[, , i])
+            est[, , j] <- est[, , j-1] %*% (I + dna[, , i] * indi[j])
             j <- j + 1
         }
         time <- times[first:last]
@@ -64,7 +64,8 @@ var.aj <- function(est, dna, nrisk, nev, times, first, last) {
 ###########      
       
 etm <- function(data, state.names, tra, cens.name, s, t="last",
-                covariance=TRUE, delta.na = TRUE) {
+                covariance=TRUE, delta.na = TRUE, modif = FALSE,
+                alpha = 1/4, c = 1) {
     
     if (missing(data))
         stop("Argument 'data' is missing with no default")
@@ -99,6 +100,8 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
             stop("The name of the censoring variable just is a name of the model states.")
         }
     }
+
+    if (modif) covariance <- FALSE
     
 ### transitions
     colnames(tra) <- rownames(tra) <- state.names
@@ -127,7 +130,8 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
         stop("Transitions into the same state are not allowed")
     if (!(all(ref.wo.cens %in% test) == TRUE))
         warning("You may have specified more possible transitions than actually present in the data")
-    
+
+    n <- length(unique(data$id))
 ### data.frame transformation
     data$id <- if (is.character(data$id)) as.factor(data$id) else data$id
     data$from <- as.factor(data$from)
@@ -185,8 +189,8 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
     dna <- array(temp$dna, dim=c(dim(tra), length(times)))
     ii <- seq_len(dim(tra)[1])
     for (i in seq_along(times)) {
-        ## dna[cbind(ii, ii, i)] <- -(.Internal(rowSums(nev[, , i], dim(nev)[1], dim(nev)[1], FALSE))/nrisk[i, ])
-        dna[cbind(ii, ii, i)] <- -(rowSums(nev[, , i])/nrisk[i, ])
+        dna[cbind(ii, ii, i)] <- -(.rowSums(nev[, , i], dim(nev)[1], dim(nev)[1], FALSE))/nrisk[i, ]
+        ## dna[cbind(ii, ii, i)] <- -(rowSums(nev[, , i])/nrisk[i, ])
     }
     dna[is.nan(dna)] <- 0
     
@@ -208,7 +212,13 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
         nrisk <- matrix(nrisk[last, ], 1, dim(tra)[1])
         nev <- array(0, dim(tra))
     } else {
-        est <- prodint(dna, times, first, last)
+        aa <- nrisk[first:last, ]
+        if (modif) {
+            which.compute <- as.integer(aa >= c * n^alpha)
+        } else {
+            which.compute <- rep(1, length(aa))
+        }
+        est <- prodint(dna, times, first, last, which.compute)
         ##
         if (covariance == TRUE) {
             var <- var.aj(est$est, dna, nrisk, nev, times, first, last)
@@ -230,11 +240,15 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
     }
     
     colnames(nrisk) <- state.names
-    nrisk <- nrisk[, !(colnames(nrisk) %in% setdiff(unique(trans$to), unique(trans$from))), drop = FALSE]
+    nrisk <- nrisk[, !(colnames(nrisk) %in%
+                       setdiff(unique(trans$to), unique(trans$from))),
+                   drop = FALSE]
     
     res <- list(est = est$est, cov = var, time = est$time, s =s, t = t,
-                trans = trans, state.names = state.names, cens.name = cens.name,
-                n.risk = nrisk, n.event = nev, delta.na = delta.na)
+                trans = trans, state.names = state.names,
+                cens.name = cens.name,
+                n.risk = nrisk, n.event = nev, delta.na = delta.na,
+                ind.n.risk = ceiling(c * n^alpha))
     class(res) <- "etm"
     res
 }

@@ -60,7 +60,7 @@ start = NULL, id = NULL, keep)
   \item{\dots}{Further columns specified in \code{keep}}
 }
 \author{
-  Arthur Allignol, \email{arthur.allignol@fdm.uni-freiburg.de}
+  Arthur Allignol, \email{arthur.allignol@uni-ulm.de}
 }
 \seealso{
   \code{\link{etm}}

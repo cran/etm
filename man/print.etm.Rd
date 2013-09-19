@@ -24,6 +24,6 @@
 \value{
   No value returned
 }
-\author{Arthur Allignol, \email{arthur.allignol@fdm.uni-freiburg.de}}
+\author{Arthur Allignol, \email{arthur.allignol@uni-ulm.de}}
 \seealso{\code{\link{etm}}}
 \keyword{print}

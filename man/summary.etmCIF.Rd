@@ -33,7 +33,7 @@
   \item{n.event}{Number of events at time \eqn{t}{t}}
 }
 \author{
-  Arthur Allignol \email{arthur.allignol@fdm.uni-freiburg.de}
+  Arthur Allignol \email{arthur.allignol@uni-ulm.de}
 }
 \seealso{
   \code{\link{etmCIF}}

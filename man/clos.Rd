@@ -6,7 +6,7 @@
   associated with an intermediate event.
 }
 \usage{
-clos(x, aw = FALSE)
+clos(x, aw = FALSE, ratio = FALSE)
 }
 \arguments{
   \item{x}{An object of class \code{etm}. Argument \code{delta.na} in
@@ -14,6 +14,9 @@ clos(x, aw = FALSE)
     function.}
   \item{aw}{Logical. Whether to compute the expected change of LOS using
     alternative weighting. Default is \code{FALSE}.}
+  \item{ratio}{Logical. Compute the ratio of the expected length-of-stay
+    given instermediate event status instead of a difference. Default
+    value is \code{FALSE}}
 }
 
 \details{
@@ -92,7 +95,7 @@ clos(x, aw = FALSE)
   Aalen-Johansen estimator. \emph{R News} 6(2), 31--35.
 }
   
-\author{Arthur Allignol \email{arthur.allignol@fdm.uni-freiburg.de},
+\author{Arthur Allignol \email{arthur.allignol@uni-ulm.de},
   Matthias Wangler, Jan Beyersmann}
 \seealso{\code{\link{etm}}}
 \examples{

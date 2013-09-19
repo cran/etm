@@ -1,8 +1,17 @@
+2013-9-19 Arthur Allignol <arthur.allignol@uni-ulm.de>
+
+	* Version number 0.6
+	* NEW: pseudo value regression for excess LoS (see closPseudo)
+
 2012-04-02 Arthur Allignol <arthur.allignol@fdm.uni-freiburg.de>
 
 	* new version 0.5-3
 	* clos: All references to the changeLOS package removed from the doc
 	* etm: removed the use of .internal()
+
+2011-11-3 Arthur Allignol <arthur.allignol@fdm.uni-freiburg.de>
+
+	* etm: *EXPERIMENTAL* Product limit modification following Lai and Ying
 
 2010-12-6 Arthur Allignol <arthur.allignol@fdm.uni-freiburg.de>
 

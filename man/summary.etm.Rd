@@ -42,7 +42,7 @@
     just before time \eqn{t}{t}}
   \item{n.event}{Number of events at time \eqn{t}{t}}
 }
-\author{Arthur Allignol \email{arthur.allignol@fdm.uni-freiburg.de}}
+\author{Arthur Allignol \email{arthur.allignol@uni-ulm.de}}
 \seealso{\code{\link{etm}}}
 \keyword{methods}
 \keyword{print}

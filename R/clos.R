@@ -1,5 +1,5 @@
 ### To be used for competing endpoints
-clos.cp <- function(x, tr.mat, aw) {
+clos.cp <- function(x, tr.mat, aw, ratio) {
     dims <- dim(x$est)
     los <- matrix(rep(x$time, 3), ncol = 3, byrow = FALSE)
     phi2 <- matrix(data=c(x$time, rep(0, dims[3]), rep(0, dims[3])),
@@ -39,7 +39,11 @@ clos.cp <- function(x, tr.mat, aw) {
     
     tmp <- list(los, phi2, phi3)
     estimates <- lapply(tmp, function(z) {
-        ldiff <- z[, 3] - z[, 2]
+        if (ratio) {
+            ldiff <- z[, 3] / z[, 2]
+        } else {
+            ldiff <- z[, 3] - z[, 2]
+        }
         ldiff[filtre] <- 0
         estimate <- matrix(ldiff[is.element(z[, 1], wait.times)], nrow = 1) %*%
             matrix(my.weights, ncol=1)
@@ -78,7 +82,7 @@ clos.cp <- function(x, tr.mat, aw) {
 
 
 ### To be used for single endpoint
-clos.nocp <- function(x, tr.mat, aw) {
+clos.nocp <- function(x, tr.mat, aw, ratio) {
     dims <- dim(x$est)
     los <- matrix(rep(x$time, 3), ncol = 3, byrow = FALSE)
     tau <- max(x$time)
@@ -103,8 +107,12 @@ clos.nocp <- function(x, tr.mat, aw) {
     ev.last <- apply(x$n.event[, , dims[3]], 1, sum)[1:2]
     pp <- rbind(pp, pp[nrow(pp), ] - ev.last)
     filtre <- pp[, 1] <= 0 | pp[, 2] <= 0
-    
-    los.diff <- los[, 3] - los[, 2]
+
+    if (ratio) {
+        los.diff <- los[, 3] / los[, 2]
+    } else {
+        los.diff <- los[, 3] - los[, 2]
+    }
     los.diff[filtre] <- 0
     my.weights <- diff(c(0, 1 - wait.prob))
     estimate <- matrix(los.diff[is.element(los[, 1], wait.times)], nrow = 1) %*%
@@ -139,7 +147,7 @@ clos.nocp <- function(x, tr.mat, aw) {
     
 
 
-clos <- function(x, aw = FALSE) {
+clos <- function(x, aw = FALSE, ratio = FALSE) {
     if (!inherits(x, "etm")) {
         stop("'x' must be an 'etm' object")
     }
@@ -156,9 +164,9 @@ clos <- function(x, aw = FALSE) {
     I <- diag(1, dims[1])
     tr.mat <- array(apply(x$delta.na, 3, "+", I), dim = dims)
     if (comp.risk) {
-        res <- clos.cp(x, tr.mat, aw)
+        res <- clos.cp(x, tr.mat, aw, ratio)
     }
-    else res <- clos.nocp(x, tr.mat, aw)
+    else res <- clos.nocp(x, tr.mat, aw, ratio)
     class(res) <- "clos.etm"
     res
 }

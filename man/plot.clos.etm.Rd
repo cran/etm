@@ -45,7 +45,7 @@ legend.bty = "n", ...)
   No value returned
 }
 \author{
-  Arthur Allignol \email{arthur.allignol@fdm.uni-freiburg.de}, Matthias Wangler
+  Arthur Allignol \email{arthur.allignol@uni-ulm.de}, Matthias Wangler
 }
 \seealso{
   \code{\link{clos}}

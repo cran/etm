@@ -38,6 +38,6 @@
 \value{
   An object of class \code{trellis}.
 }
-\author{Arthur Allignol, \email{arthur.allignol@fdm.uni-freiburg.de}}
+\author{Arthur Allignol, \email{arthur.allignol@uni-ulm.de}}
 \seealso{\code{\link{etm}}, \code{\link[lattice]{xyplot}}}
 \keyword{hplot}
