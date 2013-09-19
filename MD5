@@ -1,5 +1,5 @@
-e541f529b833d613e62307751ce156d5 *ChangeLog
-a8985b333f045d822e1acd060c4c9efa *DESCRIPTION
+e9cd1f3ea2c52e4977e3b043dcbf2a74 *ChangeLog
+03e510ebcdc5633aab5c546d7558dcad *DESCRIPTION
 09069d077191799a8f2ac148d018d5d5 *NAMESPACE
 c769759089889310b44037f7e19f70e7 *R/ci.transfo.R
 161631858c05a6977a4d54263bb78266 *R/clos.R
@@ -18,16 +18,16 @@ cf52ae3579e299ad0a6f57d998c960b0 *R/print.summary.etm.R
 9639135f498d9298226ae02df87db62c *R/pseudo_clos.R
 6b60e2b1f5e65ecf5480fd858cae7e98 *R/summary.etm.R
 e65aacbc0b2bf7de232d5a419dc4e820 *R/summary.etmCIF.R
-fc2d7e67d90ea73a83e27811b9e74f0f *R/transfoData.R
+1c0e9ec7428a9f91839b880b22ec7565 *R/transfoData.R
 ccbc25c8a47d56c4961cba60d48d9671 *R/xyplot.etm.R
-17781d81a9883a17ddff01902f1c1a1b *build/vignette.rds
+350165a6587f3f3757f3c310c4c55ee9 *build/vignette.rds
 476bcb434771e9b96558abd030d09396 *data/abortion.txt.gz
 6ab49cb48191ac4da0f54e4804f19ea1 *data/fourD.rda
 baba7e394ff9255728343ee4dc10b546 *data/sir.cont.txt.gz
 36b4ecf2f670d7cc5dbd8ffc8393bf39 *inst/CITATION
 c04ec76345a113c49c88ff0015dd6976 *inst/doc/etmCIF_tutorial.R
 1d3dd06a96abe63ec23af1df8a759eda *inst/doc/etmCIF_tutorial.Rnw
-33f46b931c665f0994b60fb71428553b *inst/doc/etmCIF_tutorial.pdf
+4965ad49f110e7e21903ba10e8c8dbb3 *inst/doc/etmCIF_tutorial.pdf
 5541acbfe1040be8fbb765e7d2f193fe *man/abortion.Rd
 6ee72cf83b8763cf38827d17bc5c4acc *man/clos.Rd
 e986af8cf8fbeaaf64fd080cb74f6014 *man/closPseudo.Rd
@@ -56,6 +56,6 @@ bef22e0261a86cdd7d4044ac94c550e5 *src/matrix.h
 d4c110cdbcab77b2f6a7b123065726df *src/risk_set_etm.c
 3d17b4ab9ed7ca8a3663c169d20e251b *tests/test.etmCIF.R
 272293fad90eb63d397f365a49a4fd6f *tests/test.etmCIF.Rout.save
-e0ddefb86d2f7c17ed49c16dd24144c6 *tests/tests.etm.R
-11d65eec43aee25d041420eaac250ba7 *tests/tests.etm.Rout.save
+bd18965f11fe208fcfb21d62f3aa5c96 *tests/tests.etm.R
+3d8522e65f29c25e78e1bdb51951175a *tests/tests.etm.Rout.save
 1d3dd06a96abe63ec23af1df8a759eda *vignettes/etmCIF_tutorial.Rnw

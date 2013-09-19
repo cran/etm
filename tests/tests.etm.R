@@ -167,6 +167,16 @@ cLOS <- etm::clos(tr.prob, aw = TRUE)
 cLOS
 
 
+### Tests on pseudo values
+t_pseudo <- closPseudo(my.observ, c("0","1","2","3"), tra, NULL,
+                       formula = ~ 1, aw = TRUE)
+
+cLOS$e.phi == t_pseudo$theta[, "e.phi"]
+cLOS$e.phi.weights.1 == t_pseudo$theta[, "e.phi.weights.1"]
+cLOS$e.phi.weights.other == t_pseudo$theta[, "e.phi.weights.other"]
+
+mean(t_pseudo$pseudoData$ps.e.phi)
+
 ### tests on etmprep
 
 ### creation of fake data in the wild format, following an illness-death model

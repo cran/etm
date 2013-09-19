@@ -1,7 +1,6 @@
 
-R version 2.14.1 (2011-12-22)
-Copyright (C) 2011 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.0.3 (2014-03-06) -- "Warm Puppy"
+Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -20,7 +19,6 @@ Type 'q()' to quit R.
 
 > require(etm)
 Loading required package: etm
-Loading required package: lattice
 Loading required package: survival
 Loading required package: splines
 > 
@@ -586,6 +584,23 @@ Alternative weighting:
 Expected change in LOS with weight.1: 2.097 
 Expected change in LOS with weight.other: 1.951 
 > 
+> 
+> ### Tests on pseudo values
+> t_pseudo <- closPseudo(my.observ, c("0","1","2","3"), tra, NULL,
++                        formula = ~ 1, aw = TRUE)
+> 
+> cLOS$e.phi == t_pseudo$theta[, "e.phi"]
+     [,1]
+[1,] TRUE
+> cLOS$e.phi.weights.1 == t_pseudo$theta[, "e.phi.weights.1"]
+     [,1]
+[1,] TRUE
+> cLOS$e.phi.weights.other == t_pseudo$theta[, "e.phi.weights.other"]
+     [,1]
+[1,] TRUE
+> 
+> mean(t_pseudo$pseudoData$ps.e.phi)
+[1] 1.968323
 > 
 > ### tests on etmprep
 > 

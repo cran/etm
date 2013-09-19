@@ -53,11 +53,13 @@ etmprep <- function(time, status, data, tra, state.names, cens.name = NULL,
     status[, indd] <- as.matrix(data[, ind])
 
     if (is.null(start)) {
-        start.state <- as.integer(rep(state.names[1], n))
+        start.state <- rep(state.names[1], n)
         start.time <- rep(0, n)
     } else {
-        if ((start$state != nrow(data)) | (start$time != nrow(data)))
+        if ((length(start$state) != nrow(data)) | (length(start$time) != nrow(data))) 
             stop("'start$state' or 'start$time' are not as long as the data")
+        if (!all(unique(start$state) %in% state.names))
+            stop("'start$state' not in 'state.names'")
         start.state <- start$state
         start.time <- start$time
     }

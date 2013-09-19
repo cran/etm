@@ -1,3 +1,10 @@
+24-3-2014 Arthur Allignol <arthur.allignol@uni-ulm.de>
+
+	Version 0.6-1
+	* etmprep: Bug fix in error handling of the start argument
+	* etmprep: Bug fix in the dealing of to and from when state
+		   names are given
+
 2013-9-19 Arthur Allignol <arthur.allignol@uni-ulm.de>
 
 	* Version number 0.6
