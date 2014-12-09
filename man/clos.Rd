@@ -99,10 +99,9 @@ clos(x, aw = FALSE, ratio = FALSE)
   Matthias Wangler, Jan Beyersmann}
 \seealso{\code{\link{etm}}}
 \examples{
-require(changeLOS)
-data(los.data) # in package changeLOS
+data(los.data)
 
-## putting los.data in the long format (see changeLOS)
+## putting los.data in the long format
 my.observ <- prepare.los.data(x=los.data)
 
 tra <- matrix(FALSE, 4, 4)

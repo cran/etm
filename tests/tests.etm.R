@@ -125,9 +125,9 @@ data <- data.frame(id, from, to, entry, exit, group = abortion$group)
 tra <- matrix(FALSE, 4, 4)
 tra[1, 2:4] <- TRUE
 
-cif.control <- etm(data[data$group == 0, ], c("0", "1", "2", "3"), 
+cif.control <- etm(data[data$group == 0, ], c("0", "1", "2", "3"),
                         tra, NULL, 0)
-cif.exposed <- etm(data[data$group == 1, ], c("0", "1", "2", "3"), 
+cif.exposed <- etm(data[data$group == 1, ], c("0", "1", "2", "3"),
                         tra, NULL, 0)
 
 all.equal(trprob(cif.control, "0 1"), cif.control$est["0", "1", ])
@@ -147,7 +147,6 @@ all.equal(aa$"0 1"$P, as.vector(trprob(cif.control, "0 1")))
 
 ### test on los data
 
-require(changeLOS)
 data(los.data) # in package changeLOS
 
 ## putting los.data in the long format (see changeLOS)
@@ -217,5 +216,5 @@ ref <- data.frame(id = c(1, 1, 2, 2, 3, 3, 4, 5, 6),
                   cova = c(1, 1, 0, 0, 1, 1, 0, 1, 1))
 ref$from <- factor(as.character(ref$from), levels = c("0", "1", "2", "cens"))
 ref$to <- factor(as.character(ref$to), levels = c("0", "1", "2", "cens"))
-                  
+
 all.equal(ref, newdat)

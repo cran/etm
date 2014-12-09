@@ -1,3 +1,17 @@
+9-12-2014 Arthur Allignol <arthur.allignol@uni-ulm.de>
+
+	* help page for ggtransfo + exmaples
+	* ggplot2 in suggest
+	* remove changeLOS from suggest. Update tests and 
+	help pages accordingly
+	* rerun of the tests
+
+7-10-2014 Arthur Allignol <arthur.allignol@uni-ulm.de>
+
+	Version 0.6-2
+	* etm: Implementation of the variance of CIF with Lai and Ying 
+	transformation. 	
+
 24-3-2014 Arthur Allignol <arthur.allignol@uni-ulm.de>
 
 	Version 0.6-1

@@ -19,7 +19,66 @@ prodint <- function(dna, times, first, last, indi) {
 
 
 
+#################################################
+### Variance Lai and Ying for competing risks ###
+#################################################
 
+var.ly <- function(est, state.names, nrisk, nev, times, first, last, indi) {
+
+    if (first >= last) {
+        return(NULL)
+        
+    } else {
+
+        nCompRisks <- length(state.names) - 1
+                
+        ## prepare what we need
+        cif <- n.event <- matrix(nrow = last - first + 1, ncol = nCompRisks)
+        nev <- nev[, , first:last]
+        nrisk <- nrisk[first:last, ]
+        time <- times[first:last]
+        lt <- length(time)
+
+        for (i in seq_len(last - first + 1)) {
+            cif[i, ] <- est[1, 2:(nCompRisks + 1), i]
+            n.event[i, ] <- nev[1, 2:(nCompRisks + 1), i]
+        }
+        sminus <- c(1, est[1, 1, 1:(last - first)])
+        S <- est[1, 1, ]
+
+        ## create the matrix of covariances
+        out <- array(0, dim = c((nCompRisks + 1)^2, (nCompRisks + 1)^2, (last-first+1)))
+
+        ## get the indices on where to put the variance
+        pos <- sapply(1:length(state.names), function(i) {
+            paste(state.names, state.names[i])
+        })
+        pos <- matrix(pos)
+        dimnames(out) <- list(pos, pos, time)
+        pos.cp <- sapply(seq_along(state.names), function(i)
+            paste(state.names[1], state.names[i], sep = " "))[-1]
+        ind.cp <- which(pos %in%  pos.cp, arr.ind = TRUE)
+
+        ## the real shebang
+        for (i in seq_along(ind.cp)) {
+            for (j in seq_len(lt)) {
+                f <- cif[1:j, i]
+                s <- sminus[1:j]
+                spasminus <- S[1:j]
+                y <- nrisk[1:j, 1]
+                dn <- rowSums(array(n.event[1:j, ], dim = c(j, nCompRisks)))
+                dnt <- n.event[1:j, i]
+                indi.loop <- indi[1:j]
+                ## from biomJ paper eq. (6)
+                vly <- sum(((f[j] - f)^2 / (y - dn)) * (dn/y) * indi.loop +
+                    s^2/y^3 * (y - dnt - 2 * (y - dn) * ((f[j] - f)/spasminus)) * dnt * indi.loop)
+                out[ind.cp[i], ind.cp[i], j] <- vly
+            }
+        }
+    }
+
+    return(out)
+}
 
 
 ####################################
@@ -101,7 +160,16 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
         }
     }
 
-    if (modif) covariance <- FALSE
+    ## if modif TRUE, check that the model is competing risks. else
+    ## set to false and issue a warning
+    if (modif == TRUE && covariance == TRUE) {
+        ## check for competing risks
+        tr.cp <- tra_comp(length(state.names) - 1)
+        if (any(dim(tra) != dim(tr.cp)) | (all(dim(tra) == dim(tr.cp)) && !all(tra == tr.cp))) {
+            covariance <- FALSE
+            warning("The variance of the estimator with the Lay and Ying transformation is only computed for competing risks data")
+        }
+    }
     
 ### transitions
     colnames(tra) <- rownames(tra) <- state.names
@@ -211,7 +279,9 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
         var <- NULL
         nrisk <- matrix(nrisk[last, ], 1, dim(tra)[1])
         nev <- array(0, dim(tra))
+        
     } else {
+        
         aa <- nrisk[first:last, ]
         if (modif) {
             which.compute <- as.integer(aa >= c * n^alpha)
@@ -219,20 +289,30 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
             which.compute <- rep(1, length(aa))
         }
         est <- prodint(dna, times, first, last, which.compute)
-        ##
+        
         if (covariance == TRUE) {
-            var <- var.aj(est$est, dna, nrisk, nev, times, first, last)
-            pos <- sapply(1:length(state.names), function(i) {
-                paste(state.names, state.names[i])
-            })
-            pos <- matrix(pos)
-            dimnames(var) <- list(pos, pos, est$time)
+            if (modif == FALSE) {
+                var <- var.aj(est$est, dna, nrisk, nev, times, first, last)
+                pos <- sapply(1:length(state.names), function(i) {
+                    paste(state.names, state.names[i])
+                })
+                pos <- matrix(pos)
+                dimnames(var) <- list(pos, pos, est$time)
+                
+            }  else {
+                
+                var <- var.ly(est$est, state.names, nrisk, nev, times, first, last, which.compute)
+            }
+            
+        } else {
+            var <- NULL
         }
-        else var <- NULL
+        
         if (delta.na) {
             delta.na <- dna[, , first:last]
         }
         else delta.na <- NULL
+        
         nrisk <- nrisk[first:last, ]
         nev <- nev[, , first:last]
         dimnames(est$est) <- list(state.names, state.names, est$time)
