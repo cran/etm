@@ -17,4 +17,7 @@ S3method(plot, etmCIF)
 S3method(summary, etmCIF)
 S3method(print, summary.etmCIF)
 S3method(ggtransfo, etm)
+importFrom("graphics", "axis", "box", "close.screen", "lines", "par",
+           "plot", "screen", "segments", "split.screen")
+importFrom("stats", "model.extract", "qnorm", "quantile", "terms")
 useDynLib(etm, risk_set_etm, cov_dna, los_cp, los_nocp)

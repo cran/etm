@@ -22,10 +22,10 @@ extern "C" {
 	Array Ma(ma,*rows,*cols,*len );
 
 	Vector Los1(los1, *len);
-	Los1[*len] = *tau;
+	Los1[*len - 1] = *tau;
  
 	Vector Los0(los0,*len);
-	Los0[*len] = *tau;
+	Los0[*len - 1] = *tau;
 
 	Vector Phi2case(phi2case,*len);
 

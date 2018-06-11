@@ -1,6 +1,6 @@
 d669fb109b9e87292da9d4201b52c7c9 *ChangeLog
-a90f15f200f43e7d4e7723ef95a37763 *DESCRIPTION
-a0e69954bb848fa110ca164c01c07848 *NAMESPACE
+19e7fdb23e3e5453f071b63e46dab424 *DESCRIPTION
+b370cabe08c50082034b35ef18b337ac *NAMESPACE
 c769759089889310b44037f7e19f70e7 *R/ci.transfo.R
 161631858c05a6977a4d54263bb78266 *R/clos.R
 d139e9461403cfe36837c0439720c1a7 *R/etm.R
@@ -56,7 +56,7 @@ c7061cba7c3e3106b2074ca58beba9fb *man/tra.Rd
 6dd847e3ac794979dce68bc193d7018b *man/trprob_trcov.Rd
 b8d5092f9391804dce102fd1998e28df *man/xyplot.etm.Rd
 c7f5114c2954466b8fda5207bd5c7ee5 *src/cov_dna.c
-4ac9ec1ce02d321c61c28e18fbd49e15 *src/los_etm.cc
+5badeb419fe333c5a5cb7f423855d456 *src/los_etm.cc
 a58cd565dd706afa4346ddd996a82959 *src/matrix.cc
 bef22e0261a86cdd7d4044ac94c550e5 *src/matrix.h
 d4c110cdbcab77b2f6a7b123065726df *src/risk_set_etm.c
