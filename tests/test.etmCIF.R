@@ -1,7 +1,13 @@
 ### test file for etmCIF.
 ### Really simple tests and comparison with etm
 
+old <- options(digits = 5)
+
 require(etm)
+
+if (!require(survival, quietly = TRUE))
+    stop("The following tests require the 'survival' package")
+
 
 data(abortion)
 
@@ -16,14 +22,13 @@ data <- data.frame(id, from, to, entry, exit, group = abortion$group)
 tra <- matrix(FALSE, 4, 4)
 tra[1, 2:4] <- TRUE
 
-cif.control <- etm(data[data$group == 0, ], c("0", "1", "2", "3"), 
+cif.control <- etm(data[data$group == 0, ], c("0", "1", "2", "3"),
                         tra, NULL, 0)
-cif.exposed <- etm(data[data$group == 1, ], c("0", "1", "2", "3"), 
+cif.exposed <- etm(data[data$group == 1, ], c("0", "1", "2", "3"),
                         tra, NULL, 0)
 
 
 ## Computation of the CIFs with etmCIF
-
 netm <- etmCIF(Surv(entry, exit, cause != 0) ~ group, abortion,
                etype = cause, failcode = 3)
 
@@ -65,11 +70,11 @@ all.equal(unname(trprob(cif.exposed, "0 1")), snetm[[2]][[1]]$P)
 scif.control <- summary(cif.control, ci.fun = "cloglog")
 scif.exposed <- summary(cif.exposed, ci.fun = "cloglog")
 
-all.equal(scif.control[[3]]$lower, snetm[[1]][[3]]$lower)
-all.equal(scif.control[[3]]$upper, snetm[[1]][[3]]$upper)
+all.equal(scif.control[[4]]$lower, snetm[[1]][[3]]$lower)
+all.equal(scif.control[[4]]$upper, snetm[[1]][[3]]$upper)
 
-all.equal(scif.exposed[[3]]$lower, snetm[[2]][[3]]$lower)
-all.equal(scif.exposed[[3]]$upper, snetm[[2]][[3]]$upper)
+all.equal(scif.exposed[[4]]$lower, snetm[[2]][[3]]$lower)
+all.equal(scif.exposed[[4]]$upper, snetm[[2]][[3]]$upper)
 
 
 ### test with factors in the input
@@ -140,3 +145,5 @@ test.c
 
 summary(test)
 summary(test.c)
+
+options(old)

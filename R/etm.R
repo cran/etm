@@ -1,133 +1,15 @@
-prodint <- function(dna, times, first, last, indi) {
-    I <- array(0, dim=dim(dna)[c(1, 2)])
-    diag(I) <- 1
-    if (first >= last) {
-        est <- array(I, dim=c(dim(dna)[c(1, 2)], 1))
-        time <- NULL
-    } else {
-        est <- array(0, dim=c(dim(dna)[c(1, 2)], (last-first+1)))
-        est[, , 1] <- I + dna[, , first] * indi[1]
-        j <- 2
-        for (i in (first + 1):last) {
-            est[, , j] <- est[, , j-1] %*% (I + dna[, , i] * indi[j])
-            j <- j + 1
-        }
-        time <- times[first:last]
-    }
-    list(est=est, time=time)
+etm <- function(data, ...) {
+    UseMethod("etm")
 }
 
 
+etm.data.frame <- function(data, state.names, tra, cens.name, s, t = "last",
+                           covariance = TRUE, delta.na = TRUE, modif = FALSE,
+                           c = 1, alpha = NULL, strata, ...) {
 
-#################################################
-### Variance Lai and Ying for competing risks ###
-#################################################
-
-var.ly <- function(est, state.names, nrisk, nev, times, first, last, indi) {
-
-    if (first >= last) {
-        return(NULL)
-        
-    } else {
-
-        nCompRisks <- length(state.names) - 1
-                
-        ## prepare what we need
-        cif <- n.event <- matrix(nrow = last - first + 1, ncol = nCompRisks)
-        nev <- nev[, , first:last]
-        nrisk <- nrisk[first:last, ]
-        time <- times[first:last]
-        lt <- length(time)
-
-        for (i in seq_len(last - first + 1)) {
-            cif[i, ] <- est[1, 2:(nCompRisks + 1), i]
-            n.event[i, ] <- nev[1, 2:(nCompRisks + 1), i]
-        }
-        sminus <- c(1, est[1, 1, 1:(last - first)])
-        S <- est[1, 1, ]
-
-        ## create the matrix of covariances
-        out <- array(0, dim = c((nCompRisks + 1)^2, (nCompRisks + 1)^2, (last-first+1)))
-
-        ## get the indices on where to put the variance
-        pos <- sapply(1:length(state.names), function(i) {
-            paste(state.names, state.names[i])
-        })
-        pos <- matrix(pos)
-        dimnames(out) <- list(pos, pos, time)
-        pos.cp <- sapply(seq_along(state.names), function(i)
-            paste(state.names[1], state.names[i], sep = " "))[-1]
-        ind.cp <- which(pos %in%  pos.cp, arr.ind = TRUE)
-
-        ## the real shebang
-        for (i in seq_along(ind.cp)) {
-            for (j in seq_len(lt)) {
-                f <- cif[1:j, i]
-                s <- sminus[1:j]
-                spasminus <- S[1:j]
-                y <- nrisk[1:j, 1]
-                dn <- rowSums(array(n.event[1:j, ], dim = c(j, nCompRisks)))
-                dnt <- n.event[1:j, i]
-                indi.loop <- indi[1:j]
-                ## from biomJ paper eq. (6)
-                vly <- sum(((f[j] - f)^2 / (y - dn)) * (dn/y) * indi.loop +
-                    s^2/y^3 * (y - dnt - 2 * (y - dn) * ((f[j] - f)/spasminus)) * dnt * indi.loop)
-                out[ind.cp[i], ind.cp[i], j] <- vly
-            }
-        }
-    }
-
-    return(out)
-}
-
-
-####################################
-### Variance of the AJ estimator ###
-####################################
-
-var.aj <- function(est, dna, nrisk, nev, times, first, last) {
-    d <- dim(nev)[1]
-    if (first >= last) {
-        return(NULL)
-    } else {
-        out <- array(0, dim=c(dim(dna)[c(1, 2)]^2, (last-first+1)))
-        cov.dna <- matrix(.C(cov_dna,
-                             as.double(nrisk[first, ]),
-                             as.double(nev[, , first]),
-                             as.integer(d),
-                             cov = double(d^2 * d^2)
-                             )$cov, d^2, d^2)
-        bI <- diag(1, d^2)
-        out[, , 1] <- bI %*% cov.dna %*% bI
-        Id <- diag(1, d)
-        for (i in 1:length(times[(first + 1):last])) {
-            step <- first + i
-            cov.dna <- matrix(.C(cov_dna,
-                                 as.double(nrisk[step, ]),
-                                 as.double(nev[, , step]),
-                                 as.integer(d),
-                                 cov = double(d^2 * d^2)
-                                 )$cov, d^2, d^2)
-            out[, , i + 1] <- (t(Id + dna[, , step]) %x% Id) %*% out[, , i] %*%
-                ((Id + dna[, , step]) %x% Id) +
-                    (Id %x% est[, , i]) %*% cov.dna %*% (Id %x% t(est[, , i]))
-        }
-    }
-    return(out)
-}
-         
-
-
-###########
-### etm ###
-###########      
-      
-etm <- function(data, state.names, tra, cens.name, s, t="last",
-                covariance=TRUE, delta.na = TRUE, modif = FALSE,
-                alpha = 1/4, c = 1) {
-    
     if (missing(data))
         stop("Argument 'data' is missing with no default")
+    x <- data.table(data)
     if (missing(tra))
         stop("Argument 'tra' is missing with no default")
     if (missing(state.names))
@@ -136,10 +18,10 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
         stop("Argument 'cens.name' is missing with no default")
     if (missing(s))
         stop("Argument 's' is missing with no default")
-    if (!is.data.frame(data))
-        stop("Argument 'data' must be a data.frame")
-    if (!(xor(sum(c("id", "from", "to", "time") %in% names(data)) != 4,
-              sum(c("id", "from", "to", "entry", "exit") %in% names(data)) != 5)))
+    if (!is.data.frame(x))
+        stop("Argument 'x' must be a data.frame")
+    if (!(xor(sum(c("id", "from", "to", "time") %in% names(x)) != 4,
+              sum(c("id", "from", "to", "entry", "exit") %in% names(x)) != 5)))
         stop("'data' must contain the right variables")
     if (nrow(tra) != ncol(tra))
         stop("Argument 'tra' must be a quadratic  matrix.")
@@ -159,6 +41,18 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
             stop("The name of the censoring variable just is a name of the model states.")
         }
     }
+    ## The stratification variable
+    if (missing(strata)) {
+        strat_var <- "X"
+        x$X <- "1"
+        is_stratified <- FALSE
+    } else {
+        if (!all(strata %in% names(x)))
+            stop("Stratification variables not in data")
+        strat_var <- strata
+        x[, (strat_var) := lapply(.SD, as.character), .SDcols = strat_var]
+        is_stratified <- TRUE
+    }
 
     ## if modif TRUE, check that the model is competing risks. else
     ## set to false and issue a warning
@@ -170,8 +64,29 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
             warning("The variance of the estimator with the Lay and Ying transformation is only computed for competing risks data")
         }
     }
-    
-### transitions
+
+    ## keep only the variables we need
+    reg <- names(x)
+    names_msm <- intersect(c("id", "entry", "exit", "time", "from", "to", strat_var), reg)
+    x <- x[, names_msm, with = FALSE]
+
+    ## Work through the stratification variables
+    combi <- unique(x[, strat_var, with = FALSE])
+    if (length(strat_var) == 1) {
+        conditions <- lapply(seq_len(nrow(combi)), function(i) {
+                                 parse(text = paste0(strat_var, " ==  '", combi[i], "'"))
+                             })
+    } else {
+        conditions <- lapply(seq_len(nrow(combi)), function(i) {
+                                 parse(text = paste(sapply(strat_var,
+                                       function(j) {
+                                           paste0(j, "== '", combi[i, j, with = FALSE], "'")
+                                       }),
+                                       collapse = " & "))
+                             })
+    }
+
+    ## transitions
     colnames(tra) <- rownames(tra) <- state.names
     t.from <- lapply(1:dim(tra)[2], function(i) {
         rep(rownames(tra)[i], sum(tra[i, ]))
@@ -183,9 +98,9 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
     t.to <- unlist(t.to)
     trans <- data.frame(from=t.from, to=t.to)
     namen <- paste(trans[, 1], trans[, 2])
-    
+
     ## test on transitions
-    test <- unique(paste(data$from, data$to))
+    test <- x[, unique(paste(from, to))]
     if (!(is.null(cens.name))) {
         ref <- c(paste(trans$from, trans$to), paste(unique(trans$from), cens.name))
     } else {
@@ -194,142 +109,171 @@ etm <- function(data, state.names, tra, cens.name, s, t="last",
     ref.wo.cens <- paste(trans$from, trans$to)
     if (!(all(test %in% ref)==TRUE))
         stop("There is undefined transitions in the data set")
-    if (sum(as.character(data$from)==as.character(data$to)) > 0)
+    if (x[, sum(as.character(from) == as.character(to))] > 0)
         stop("Transitions into the same state are not allowed")
     if (!(all(ref.wo.cens %in% test) == TRUE))
         warning("You may have specified more possible transitions than actually present in the data")
 
-    n <- length(unique(data$id))
-### data.frame transformation
-    data$id <- if (is.character(data$id)) as.factor(data$id) else data$id
-    data$from <- as.factor(data$from)
-    data$to <- as.factor(data$to)
+    n <- length(unique(x$id))
+
+### data.table transformation
+    x[, id := if (is.character(id)) as.factor(id) else id]
     if (!(is.null(cens.name))) {
-        data$from <- factor(data$from, levels = c(cens.name, state.names), ordered = TRUE)
-        levels(data$from) <- 0:length(state.names)
-        data$to <- factor(data$to, levels = c(cens.name, state.names), ordered = TRUE)
-        levels(data$to) <- 0:length(state.names)
+        x[, from := factor(from, levels = c(cens.name, state.names), ordered = TRUE)]
+        levels(x$from) <- 0:length(state.names)
+        x[, to := factor(to, levels = c(cens.name, state.names), ordered = TRUE)]
+        levels(x$to) <- 0:length(state.names)
     } else{
-        data$from <- factor(data$from, levels = state.names, ordered = TRUE)
-        levels(data$from) <- 1:length(state.names)
-        data$to <- factor(data$to, levels = state.names, ordered = TRUE)
-        levels(data$to) <- 1:length(state.names)
+        x[, from := factor(from, levels = state.names, ordered = TRUE)]
+        levels(x$from) <- 1:length(state.names)
+        x[, to := factor(x$to, levels = state.names, ordered = TRUE)]
+        levels(x$to) <- 1:length(state.names)
     }
-    
-### if not, put like counting process data
-    if ("time" %in% names(data)) {
-        data <- data[order(data$id, data$time), ]
-        idd <- as.integer(data$id)
-        entree <- double(length(data$time))
-        masque <- rbind(1, apply(as.matrix(idd), 2, diff))
-        entree <- c(0, data$time[1:(length(data$time) - 1)]) * (masque == 0)
-        data <- data.frame(id = data$id, from = data$from,
-                           to = data$to, entry = entree, exit = data$time)
-        if (sum(data$entry < data$exit) != nrow(data))
+
+    ## if not, put like counting process data
+    if ("time" %in% names(x)) {
+        setorder(x, id, time)
+        x[, idd := as.integer(id)]
+        x[, masque := rbind(1, apply(as.matrix(idd), 2, diff))]
+        x[, entree := c(0, time[1:(length(time) - 1)]) * (masque == 0)]
+        x[, ':='(entry = entree,
+                 exit = time,
+                 entree = NULL,
+                 time = NULL,
+                 masque = NULL)]
+        if (sum(x$entry < x$exit) != nrow(x))
             stop("Exit time from a state must be > entry time")
     } else {
-        if (sum(data$entry < data$exit) != nrow(data))
+        if (sum(x$entry < x$exit) != nrow(x))
             stop("Exit time from a state must be > entry time")
     }
-    
-### Computation of the risk set and dN
-    ttime <- c(data$entry, data$exit)
-    times <- sort(unique(ttime))
-    data$from <- as.integer(as.character(data$from))
-    data$to <- as.integer(as.character(data$to))
-    temp <- .C(risk_set_etm,
-               as.integer(nrow(data)),
-               as.integer(length(times)),
-               as.integer(c(dim(tra), length(times))),
-               as.double(times),
-               as.integer(data$from),
-               as.integer(data$to),
-               as.double(data$entry),
-               as.double(data$exit),
-               nrisk=integer(dim(tra)[1] * length(times)),
-               ncens=integer(dim(tra)[1] * length(times)),
-               nev=integer(dim(tra)[1] * dim(tra)[2] * length(times)),
-               dna=double(dim(tra)[1] * dim(tra)[2] * length(times)))
-    
-    nrisk <- matrix(temp$nrisk, ncol=dim(tra)[1], nrow=length(times))
-    ncens <- matrix(temp$ncens, ncol=dim(tra)[1], nrow=length(times))
-    nev <- array(temp$nev, dim=c(dim(tra), length(times)))
-    dna <- array(temp$dna, dim=c(dim(tra), length(times)))
-    ii <- seq_len(dim(tra)[1])
-    for (i in seq_along(times)) {
-        dna[cbind(ii, ii, i)] <- -(.rowSums(nev[, , i], dim(nev)[1], dim(nev)[1], FALSE))/nrisk[i, ]
-        ## dna[cbind(ii, ii, i)] <- -(rowSums(nev[, , i])/nrisk[i, ])
-    }
-    dna[is.nan(dna)] <- 0
-    
-### computation of the Aalen-Johansen estimator
-    if (t=="last") t <- times[length(times)]
+
+    x[, from := as.integer(as.character(from))]
+    x[, to := as.integer(as.character(to))]
+
+    if (t=="last") t <- max(x$exit)
     if (!(0 <= s & s < t))
         stop("'s' and 't' must be positive, and s < t")
-    if (t <= times[1] | s >= times[length(times)])
+    if (t < x[, min(exit)] | s >= x[, max(exit)])
         stop("'s' or 't' is an invalid time")
-    first <- length(times[times <= s]) + 1
-    last <- length(times[times <= t])
-    
-    if (first >= last) {
-        est <- list()
-        est$est <- array(diag(1, dim(tra)[1], dim(tra)[2]), c(dim(tra), 1))
-        dimnames(est$est) <- list(state.names, state.names, t)
-        est$time <- NULL
-        var <- NULL
-        nrisk <- matrix(nrisk[last, ], 1, dim(tra)[1])
-        nev <- array(0, dim(tra))
-        
-    } else {
-        
-        aa <- nrisk[first:last, ]
-        if (modif) {
-            which.compute <- as.integer(aa >= c * n^alpha)
+
+    ## remove the lines in which transition before s
+    x <- x[exit > s]
+    ## remove the entries after t
+    x <- x[entry < t]
+
+    ## The Lai and Ying modification (if any)
+    if (modif) {
+        if (is.null(alpha)) {
+            if (length(c) == 1) {
+                c_modif <- c
+            } else {
+                if (length(c) != length(state.names)) {
+                    stop("if specifying a unique c for each transient state, 'c' should be the same length as the 'state.names'")
+                } else {
+                    c_modif <- c
+                }
+            }
         } else {
-            which.compute <- rep(1, length(aa))
+            ## the original lay and ying proposal
+            c_modif <- c * n^alpha
         }
-        est <- prodint(dna, times, first, last, which.compute)
-        
-        if (covariance == TRUE) {
-            if (modif == FALSE) {
-                var <- var.aj(est$est, dna, nrisk, nev, times, first, last)
+    } else {
+        c_modif <- 0
+    }
+
+    res <- lapply(conditions, function(ll)
+    {
+        zzz <- .etm(entry = x[eval(ll), entry],
+                    exit = x[eval(ll), exit],
+                    from = x[eval(ll), from],
+                    to = x[eval(ll), to],
+                    nstate = dim(tra)[1],
+                    s,
+                    t,
+                    covariance,
+                    c_modif)
+
+        nrisk <- zzz$n.risk
+
+        est <- zzz$est
+        nev <- zzz$n.event
+        var_aj <- zzz$cov
+
+        dimnames(est) <- list(state.names, state.names, zzz$time)
+
+        if (!is.null(zzz$n.risk)) {
+            colnames(nrisk) <- state.names
+            nrisk <- nrisk[, !(colnames(nrisk) %in%
+                               setdiff(unique(trans$to), unique(trans$from))),
+                           drop = FALSE]
+            dimnames(est) <- list(state.names, state.names, zzz$time)
+            dimnames(nev) <- list(state.names, state.names, zzz$time)
+
+            if (covariance) {
                 pos <- sapply(1:length(state.names), function(i) {
                     paste(state.names, state.names[i])
                 })
                 pos <- matrix(pos)
-                dimnames(var) <- list(pos, pos, est$time)
-                
-            }  else {
-                
-                var <- var.ly(est$est, state.names, nrisk, nev, times, first, last, which.compute)
+                dimnames(var_aj) <- list(pos, pos, zzz$time)
+                var_aj[var_aj < 0] <- 0
+            } else {
+                var_aj <- NULL
             }
-            
         } else {
-            var <- NULL
+            var_aj <- NULL
         }
-        
-        if (delta.na) {
-            delta.na <- dna[, , first:last]
-        }
-        else delta.na <- NULL
-        
-        nrisk <- nrisk[first:last, ]
-        nev <- nev[, , first:last]
-        dimnames(est$est) <- list(state.names, state.names, est$time)
-        dimnames(nev) <- list(state.names, state.names, est$time)
+
+        res <- list(est = est,
+                    cov = var_aj,
+                    time = zzz$time,
+                    n.risk = nrisk,
+                    n.event = nev,
+                    delta.na = zzz$dna,
+                    s = s,
+                    t = t)
+        res
+    })
+
+    if (is_stratified) {
+        names(res) <- do.call('c', lapply(conditions, as.character))
+        res$trans <- trans
+        res$tra <- tra
+        res$state.names <- state.names
+        res$data <- x
+        res$strata_variable <- strata
+        res$strata <- do.call('c', lapply(conditions, as.character))
+        class(res) <- "etm"
+    } else {
+        res <- res[[1]]
+        res$trans <- trans
+        res$tra <- tra
+        res$state.names <- state.names
+        res$data <- x
+        class(res) <- "etm"
     }
-    
-    colnames(nrisk) <- state.names
-    nrisk <- nrisk[, !(colnames(nrisk) %in%
-                       setdiff(unique(trans$to), unique(trans$from))),
-                   drop = FALSE]
-    
-    res <- list(est = est$est, cov = var, time = est$time, s =s, t = t,
-                trans = trans, state.names = state.names,
-                cens.name = cens.name,
-                n.risk = nrisk, n.event = nev, delta.na = delta.na,
-                ind.n.risk = ceiling(c * n^alpha))
-    class(res) <- "etm"
+
     res
 }
+
+
+
+### with Hist
+## etm.formula <- function(formula, data, subset, na.action) {
+
+##     call <- match.call()
+##     if (missing(data))
+##         data <- environment(formula)
+##     if (!missing(subset))
+##         data <- subset(data, subset = subset)
+
+##     mod <- EventHistory.frame(formula,
+##                               data,
+##                               specials = c("strata", "factor"),
+##                               stripSpecials = "strata",
+##                               stripAlias = list(strata = c("Strata", "factor")),
+##                               check.formula = TRUE)
+
+##     mod
+## }
 

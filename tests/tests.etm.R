@@ -1,5 +1,8 @@
 require(etm)
 
+## Print with a bit less precision to avoid lots of notes in the comparison
+old <- options(digits = 4)
+
 ### Simple test
 
 time <- id <- 1:10
@@ -18,6 +21,31 @@ etm1$cov["0 0", "0 0", ]
 
 all.equal(etm1$cov["0 0", "0 0",], trcov(etm1, "0 0"))
 
+### A simple test from AHR's author, where the first time is censored
+if (!require(survival)) {
+    stop("This test requires the survival package")
+}
+
+data <- data.frame(id=1:10, time=1:10, from=0, to=1, status=TRUE)
+
+tra <- matrix(FALSE, nrow=2, ncol=2)
+tra[1, 2] <- TRUE
+
+data$to[1] <- "cens"
+data$status[1] <- FALSE
+
+fit.km <- survfit(Surv(time, status) ~ 1, data=data)
+fit.etm <- etm(data, c("0","1"), tra, "cens", s=0, t="last", covariance=FALSE)
+
+all.equal(fit.km$surv[data$status], fit.etm$est[1,1,], check.attributes = FALSE)
+
+data$to[2] <- "cens"
+data$status[2] <- FALSE
+
+fit.km <- survfit(Surv(time, status) ~ 1, data=data)
+fit.etm <- etm(data, c("0","1"), tra, "cens", s=0, t="last", covariance=FALSE)
+
+all.equal(fit.km$surv[data$status], fit.etm$est[1,1,], check.attributes = FALSE)
 
 ### a bit more complicated
 
@@ -80,8 +108,8 @@ prob.sir <- etm(sir.cont, c("0", "1", "2"), tra, "cens", 1)
 prob.sir
 
 summ.sir <- summary(prob.sir)
-all.equal(summ.sir[[1]]$P, as.vector(trprob(prob.sir, "0 1")))
-summ.sir[[2]]
+all.equal(summ.sir[['0 1']]$P, as.vector(trprob(prob.sir, "0 1")))
+summ.sir[[3]]
 
 ## gonna play a bit with the state names
 dd <- sir.cont
@@ -218,3 +246,56 @@ ref$from <- factor(as.character(ref$from), levels = c("0", "1", "2", "cens"))
 ref$to <- factor(as.character(ref$to), levels = c("0", "1", "2", "cens"))
 
 all.equal(ref, newdat)
+
+
+######################################
+### Test the stratified calls
+######################################
+
+if (!require(kmi, quietly = TRUE))
+    stop("The following tests require the 'kmi' package")
+
+library(etm)
+
+data(icu.pneu)
+my.icu.pneu <- icu.pneu
+
+my.icu.pneu <- my.icu.pneu[order(my.icu.pneu$id, my.icu.pneu$start), ]
+masque <- diff(my.icu.pneu$id)
+
+my.icu.pneu$from <- 0
+my.icu.pneu$from[c(1, masque) == 0] <- 1
+
+my.icu.pneu$to2 <- my.icu.pneu$event
+my.icu.pneu$to2[my.icu.pneu$status == 0] <- "cens"
+my.icu.pneu$to2[c(masque, 1) == 0] <- 1
+
+
+my.icu.pneu$to <- ifelse(my.icu.pneu$to2 %in% c(2, 3), 2,
+                         my.icu.pneu$to2)
+
+my.icu.pneu <- my.icu.pneu[, c("id", "start", "stop", "from", "to",
+                               "to2", "age", "sex")]
+names(my.icu.pneu)[c(2, 3)] <- c("entry", "exit")
+
+bouh_strat <- etm(my.icu.pneu, c("0", "1", "2"), tra_ill(), "cens", 0, strata = "sex")
+
+bouh_female <- etm(my.icu.pneu[my.icu.pneu$sex == "F", ],
+                   c("0", "1", "2"), tra_ill(), "cens", 0)
+
+all(bouh_strat[[1]]$est == bouh_female$est)
+
+## Test the summary
+the_summary <- summary(bouh_strat)
+the_summary
+
+## Test trprob
+all(trprob(bouh_strat, "0 1")[[1]] == trprob(bouh_female, "0 1"))
+all(trprob(bouh_strat, "0 1", c(0, 5, 10, 15))[[1]] == trprob(bouh_female, "0 1", c(0, 5, 10, 15)))
+
+## Test trcov
+all(trcov(bouh_strat, "0 1")[[1]] == trcov(bouh_female, "0 1"))
+all(trcov(bouh_strat, c("0 1", "0 2"))[[1]] == trcov(bouh_female, c("0 1", "0 2")))
+all(trcov(bouh_strat, "0 1", c(0, 5, 10, 15))[[1]] == trcov(bouh_female, "0 1", c(0, 5, 10, 15)))
+
+options(old)

@@ -57,3 +57,42 @@ tra_surv <- function(state.names = c("0", "1")) {
     tra
 }
 
+### A little function that transform the data from time to entry exit
+transfo_to_counting <- function(df) {
+
+    if (!("data.table" %in% class(df)))
+        stop("The data should be of class 'data.table'")
+
+    setorder(df, id, time)
+    df[, idd := as.integer(id)]
+    df[, masque := rbind(1, apply(as.matrix(idd), 2, diff))]
+    df[, entree := c(0, time[1:(length(time) - 1)]) * (masque == 0)]
+    df[, ':='(entry = entree,
+              exit = time,
+              entree = NULL,
+              time = NULL,
+              masque = NULL)]
+
+    return(df)
+}
+
+### Product integration
+prodint <- function(dna, times, first, last, indi) {
+    I <- array(0, dim=dim(dna)[c(1, 2)])
+    diag(I) <- 1
+    if (first >= last) {
+        est <- array(I, dim=c(dim(dna)[c(1, 2)], 1))
+        time <- NULL
+    } else {
+        est <- array(0, dim=c(dim(dna)[c(1, 2)], (last-first+1)))
+        est[, , 1] <- I + dna[, , first] * indi[1]
+        j <- 2
+        for (i in (first + 1):last) {
+            est[, , j] <- est[, , j-1] %*% (I + dna[, , i] * indi[j])
+            j <- j + 1
+        }
+        time <- times[first:last]
+    }
+    list(est=est, time=time)
+}
+

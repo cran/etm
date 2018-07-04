@@ -1,172 +1,139 @@
-### To be used for competing endpoints
-clos.cp <- function(x, tr.mat, aw, ratio) {
-    dims <- dim(x$est)
-    los <- matrix(rep(x$time, 3), ncol = 3, byrow = FALSE)
-    phi2 <- matrix(data=c(x$time, rep(0, dims[3]), rep(0, dims[3])),
-                   ncol=3, byrow=FALSE)
-    phi3 <- matrix(data=c(x$time, rep(0, dims[3]), rep(0, dims[3])),
-                   ncol=3, byrow=FALSE)
-    ind.cens <- apply(x$n.event, 3, function(r) all(r == 0))
-    tau <- max(x$time[ind.cens], x$time)
-    
-    out <- .C(los_cp,
-              as.double(x$time),
-              as.double(tr.mat),
-              as.integer(dims[3]),
-              as.integer(dims[1]),
-              as.integer(dims[2]), 
-              los1 = as.double(los[,2]),
-              los0 = as.double(los[,3]),
-              phi2case    = as.double(phi2[,2]),
-              phi2control = as.double(phi2[,3]),
-              phi3case    = as.double(phi3[,2]),
-              phi3control = as.double(phi3[,3]),
-              as.double(tau))
-    
-    los[, 2] <- out$los0
-    los[, 3] <- out$los1
-    phi2[, 3] <- out$phi2case; phi2[, 2] <- out$phi2control
-    phi3[, 3] <- out$phi3case; phi3[, 2] <- out$phi3control
-    indi <- apply(x$n.event, 3, function(x) {sum(x[1, ]) != 0})
-    wait.times <- x$time[indi]
-    wait.prob <- x$est["0", "0", ][indi]
-    my.weights <- diff(c(0, 1 - wait.prob))
-    
-    pp <- x$n.risk[-1, ]
-    ev.last <- apply(x$n.event[, , dims[3]], 1, sum)[1:2]
-    pp <- rbind(pp, pp[nrow(pp), ] - ev.last)
-    filtre <- pp[, 1] <= 0 | pp[, 2] <= 0
-    
-    tmp <- list(los, phi2, phi3)
-    estimates <- lapply(tmp, function(z) {
-        if (ratio) {
-            ldiff <- z[, 3] / z[, 2]
-        } else {
-            ldiff <- z[, 3] - z[, 2]
-        }
-        ldiff[filtre] <- 0
-        estimate <- matrix(ldiff[is.element(z[, 1], wait.times)], nrow = 1) %*%
-            matrix(my.weights, ncol=1)
-        estimate
-    })
-    
-    e.phi.w1 <- e.phi.w23 <- my.weights1 <- my.weights23 <- NULL
-    if (aw) {
-        cif1 <- cumsum(c(1, x$est["0", "0", 1:(dims[3] - 1)]) * tr.mat[1, 2, ])
-        my.weights1 <- diff(c(0, cif1[indi])) / cif1[length(cif1)]
-        cif23 <- cumsum(c(1, x$est["0", "0", 1:(dims[3] - 1)]) *
-                        (tr.mat[1, 3, ] + tr.mat[1, 4, ]))
-        my.weights23 <- diff(c(0, cif23[indi])) / cif23[length(cif23)]
-        weights.aw <- list(my.weights1, my.weights23)
-        estimates.aw <- lapply(weights.aw, function(z) {
-            ldiff <- los[, 3] - los[, 2]
-            ldiff[filtre] <- 0
-            estimate <- matrix(ldiff[is.element(los[, 1], wait.times)], nrow = 1) %*%
-                matrix(z, ncol = 1)
-            estimate
-        })
-        e.phi.w1 <- estimates.aw[[1]]
-        e.phi.w23 <- estimates.aw[[2]]
-    }
-    
-    res <- list(e.phi = estimates[[1]], phi.case = los[, 3],
-                phi.control = los[, 2], e.phi2 = estimates[[2]],
-                phi2.case = phi2[, 3], phi2.control = phi2[, 2],
-                e.phi3 = estimates[[3]], phi3.case = phi3[, 3],
-                phi3.control = phi3[, 2], weights = my.weights,
-                w.time = wait.times, time = x$time, e.phi.weights.1 = e.phi.w1,
-                e.phi.weights.other = e.phi.w23, weights.1 = my.weights1,
-                weights.other = my.weights23)
-    res
+### Expected change of LoS
+### Arthur Allignol <arthur.allignol@uni-ulm.de>
+#####################################################################
+
+
+clos <- function(x, aw, ratio, ...) {
+    UseMethod("clos")
 }
 
-
-### To be used for single endpoint
-clos.nocp <- function(x, tr.mat, aw, ratio) {
-    dims <- dim(x$est)
-    los <- matrix(rep(x$time, 3), ncol = 3, byrow = FALSE)
-    tau <- max(x$time)
-    
-    out <- .C(los_nocp,
-              as.double(x$time),
-              as.double(tr.mat),
-              as.integer(dims[3]),
-              as.integer(dims[1]),
-              as.integer(dims[2]), 
-              los1 = as.double(los[,2]),
-              los0 = as.double(los[,3]),
-              as.double(tau))
-    
-    los[, 2] <- out$los0
-    los[, 3] <- out$los1
-    indi <- apply(x$n.event, 3, function(x) {sum(x[1, ]) != 0})
-    wait.times <- x$time[indi]
-    wait.prob <- x$est["0", "0", ][indi]
-
-    pp <- x$n.risk[-1, ]
-    ev.last <- apply(x$n.event[, , dims[3]], 1, sum)[1:2]
-    pp <- rbind(pp, pp[nrow(pp), ] - ev.last)
-    filtre <- pp[, 1] <= 0 | pp[, 2] <= 0
-
-    if (ratio) {
-        los.diff <- los[, 3] / los[, 2]
-    } else {
-        los.diff <- los[, 3] - los[, 2]
-    }
-    los.diff[filtre] <- 0
-    my.weights <- diff(c(0, 1 - wait.prob))
-    estimate <- matrix(los.diff[is.element(los[, 1], wait.times)], nrow = 1) %*%
-        matrix(my.weights, ncol=1)
-    
-    e.phi.w1 <- e.phi.w2 <- my.weights1 <- my.weights2 <- NULL
-    if (aw) {
-        cif1 <- cumsum(c(1, x$est["0", "0", 1:(dims[3] - 1)]) * tr.mat[1, 2, ])
-        my.weights1 <- diff(c(0, cif1[indi])) / cif1[length(cif1)]
-        cif2 <- cumsum(c(1, x$est["0", "0", 1:(dims[3] - 1)]) * tr.mat[1, 3, ])
-        my.weights2 <- diff(c(0, cif2[indi])) / cif2[length(cif2)]
-        weights.aw <- list(my.weights1, my.weights2)
-        estimates.aw <- lapply(weights.aw, function(z) {
-            ldiff <- los[, 3] - los[, 2]
-            ldiff[filtre] <- 0
-            estimate <- matrix(ldiff[is.element(los[, 1], wait.times)], nrow = 1) %*%
-                matrix(z, ncol = 1)
-            estimate
-        })
-        e.phi.w1 <- estimates.aw[[1]]
-        e.phi.w2 <- estimates.aw[[2]]
-    }
-    
-    res <- list(e.phi = estimate[[1]], phi.case = los[, 3],
-                phi.control = los[, 2], weights = my.weights,
-                w.time = wait.times, time = x$time, e.phi.weights.1 = e.phi.w1,
-                e.phi.weights.other = e.phi.w2, weights.1 = my.weights1,
-                weights.other = my.weights2)
-    res
-}
-
-    
-
-
-clos <- function(x, aw = FALSE, ratio = FALSE) {
+clos.etm <- function(x, aw = FALSE, ratio = FALSE, ...) {
     if (!inherits(x, "etm")) {
         stop("'x' must be an 'etm' object")
     }
     if (is.null(x$delta.na)) {
         stop("Needs the increment of the Nelson-Aalen estimator")
     }
-    absorb <- setdiff(levels(x$trans$to), levels(x$trans$from))
-    transient <- unique(x$state.names[!(x$state.names %in% absorb)])
-    if (!(length(transient) == 2 && length(absorb) %in% c(1, 2)))
-        stop("The multistate model must have 2 transient states \n and 1 or 2 absorbing states")
+
+    if (!is.null(x$strata)) stop("'clos' is not yet implemented for etm objects with strata. Please use e.g., 'clos(etm_object_name[1]'")
+
+    ## test if we have an illness-death model
     dims <- dim(x$est)
     comp.risk <- FALSE
     if (dims[1] == 4) comp.risk <- TRUE
-    I <- diag(1, dims[1])
-    tr.mat <- array(apply(x$delta.na, 3, "+", I), dim = dims)
+    ## I <- diag(1, dims[1])
+    ## tr.mat <- array(apply(x$delta.na, 3, "+", I), dim = dims)
     if (comp.risk) {
-        res <- clos.cp(x, tr.mat, aw, ratio)
+        res <- clos.cp(x, aw, ratio)
+        ## stop("not yet")
     }
-    else res <- clos.nocp(x, tr.mat, aw, ratio)
+    else res <- clos.nocp(x, aw, ratio)
+
     class(res) <- "clos.etm"
     res
 }
+
+
+clos.msfit <- function(x, aw = FALSE, ratio = FALSE, cox_model, ...) {
+
+    if (!inherits(x, "msfit")) {
+        stop("'x' must be an 'msfit' object")
+    }
+
+    if (missing(cox_model)) {
+        stop("cox model fit is missing")
+    }
+
+    ## CumHaz <- dplyr::group_by(x$Haz, trans)
+    ## CumHaz <- dplyr::mutate(CumHaz, dhaz = diff(c(0, Haz)))
+    CumHaz <- data.table(x$Haz)
+    CumHaz[, dhaz := diff(c(0, Haz)), by = trans]
+
+    trans <- x$trans[!is.na(x$trans)]
+    ltrans <- dim(x$trans)
+    ltimes <- unique(CumHaz[, length(time), by = trans][, V1])
+
+    times <- sort(unique(CumHaz$time))
+
+
+    dna <- nev <- array(0, dim = c(ltrans[1], ltrans[1], ltimes))
+    nrisk <- matrix(0, nrow = ltimes, ncol = ltrans[1])
+
+    ## Take care of the cox model and do the transformations in the
+    ## same loop
+    temp_surv <- survival::survfit(cox_model)
+    dat_surv <- data.frame(time = temp_surv$time,
+                           n.risk = temp_surv$n.risk,
+                           n.event = temp_surv$n.event,
+                           trans = rep(trans, temp_surv$strata))
+
+    for (i in trans) {
+        aa <- which(x$trans == i, arr.ind = TRUE)
+        dna[aa[1], aa[2], ] <- CumHaz$dhaz[CumHaz$trans == i]
+
+        ## fill nev and nrisk
+        dat_temp <- dat_surv[dat_surv$trans == i, ]
+        ind <- findInterval(times, dat_temp$time)
+        place <- which(ind != 0)
+        tmp <- integer(ltimes)
+        tmp <- cumsum(dat_temp$n.event)[ind]
+
+        nev[aa[1], aa[2], place] <- c(tmp[1], diff(tmp))
+        nrisk[place, aa[1]] <- dat_temp$n.risk[ind]
+
+        tt <- nrisk[2:ltimes, aa[1]] - nev[aa[1], aa[2], 1:(ltimes-1)]
+
+        if (!all((tt == 0) == FALSE)) {
+            uu <- max(times[tt == 0])
+
+            if (uu < max(times)) {
+                vv <- which(times == uu)
+                nrisk[(vv + 1):nrow(nrisk), aa[1]] <- 0
+            }
+        }
+    }
+
+    ## Ugly risk set fix for illness-death models where nobody starts
+    ## in state 1 at time 0
+    ind <- which(nrisk[, 2] != 0)[1]
+    dni <- which(nev[1, 2, ] != 0)[1]
+
+    if ((ind - 1) > dni) {
+        nrisk[(dni + 1):(ind - 1), 2] <- cumsum(nev[1, 2, dni:(ind - 2)])
+    }
+
+    ii <- seq_len(ltrans[1])
+    for (i in seq_along(times)) {
+        dna[cbind(ii, ii, i)] <- -(.rowSums(dna[, , i], ltrans[1], ltrans[1], FALSE))
+    }
+
+    ## Need to compute AJ (again)
+    which.compute <- rep(1, ltimes)
+    first <- 1; last <- ltimes
+    est <- prodint(dna, times, first, last, which.compute)
+
+    comp.risk <- FALSE
+    if (ltrans[1] == 4) comp.risk <- TRUE
+    ## I <- diag(1, ltrans[1])
+    ## tr.mat <- array(apply(dna, 3, "+", I), dim = c(ltrans, ltimes))
+
+    d_tmp <- data.frame(exit = cox_model$y[, 2])
+
+    zzz <- list(est = est$est,
+                delta.na = dna,
+                time = est$time,
+                n.event = nev,
+                n.risk = nrisk[, 1:2],            ## dirty. but these should be illness-death models
+                data = d_tmp
+                )
+
+
+    if (comp.risk) {
+        stop("'clos.msfit' is not yet implemented with competing risks")
+    }
+    else res <- clos.nocp(zzz, aw, ratio)
+    class(res) <- "clos.etm"
+
+    res
+}
+

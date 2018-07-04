@@ -43,10 +43,20 @@
   \item{legend.bty}{Box type for the legend}
   \item{\dots}{Further arguments for plot}
 }
+\details{
+  By default, if the argument \code{strata} was used for creating the \code{etm}
+  object, the first transition probability for all strata will be
+  plotted. If there is no strata, all transition probabilities are
+  plotted by default.
+
+  In any case, a legend with be created by the labels are likely to be
+  ugly. Please use the \code{curvlab} argument to control the test or
+  use \code{legend = FALSE} and build your own legend. 
+}
 \value{
   No value returned
 }
-\author{Arthur Allignol, \email{arthur.allignol@uni-ulm.de}}
+\author{Arthur Allignol, \email{arthur.allignol@gmail.com}}
 \seealso{\code{\link{plot.default}}, \code{\link{legend}}, \code{\link{etm}} }
 \examples{
 data(sir.cont)

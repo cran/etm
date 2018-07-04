@@ -34,15 +34,15 @@ avec.cov <- function(i, object, transfo, trs.sep, trs, level) {
     upper <- pmin(upper, 1)
     data.frame(P, time, var, lower, upper, n.risk, n.event)
 }
-    
 
+
+## Should be used without strata (Give it single etm object)
 ci.transfo <- function(object, tr.choice, level = 0.95, transfo = "linear") {
-    if (!inherits(object, "etm")) {
-        stop ("'x' must be of class 'etm'")
-    }
+
     lt <- length(tr.choice)
     trs <- tr.choice
     trs.sep <- lapply(trs, strsplit, split = " ")
+
     ## Fixing separation of states with names including a space
     for (i in seq_along(trs.sep)) {
         if (length(trs.sep[[i]][[1]]) == 2) {
@@ -52,6 +52,7 @@ ci.transfo <- function(object, tr.choice, level = 0.95, transfo = "linear") {
             trs.sep[[i]][[1]] <- object$state.names[tt]
         }
     }
+
     trs.sep <- matrix(unlist(trs.sep), length(trs.sep), 2, byrow = TRUE)
     if (length(transfo) != lt)
         transfo <- rep(transfo[1], lt)
@@ -65,4 +66,4 @@ ci.transfo <- function(object, tr.choice, level = 0.95, transfo = "linear") {
     names(res) <- tr.choice
     res
 }
-        
+

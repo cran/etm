@@ -1,7 +1,7 @@
 \name{print.etmCIF}
 \alias{print.etmCIF}
 \title{
-  Print function for cifETM objects
+  Print function for \code{cifETM} objects
 }
 \description{
     Print method for \code{cifETM} objects
@@ -17,7 +17,7 @@
   No value returned
 }
 \author{
-  Arthur Allignol \email{arthur.allignol@uni-ulm.de}
+  Arthur Allignol \email{arthur.allignol@gmail.com}
 }
 \seealso{
   \code{\link{etmCIF}}

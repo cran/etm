@@ -46,17 +46,18 @@ etmCIF(formula, data, etype, subset, na.action, failcode = 1)
     the levels of this covariate.}
 }
 \author{
-  Arthur Allignol \email{arthur.alignol@uni-ulm.de}
+  Arthur Allignol \email{arthur.alignol@gmail.com}
 }
 \seealso{
   \code{\link{etm}}, \code{\link{print.etmCIF}},
   \code{\link{summary.etmCIF}}, \code{\link{plot.etmCIF}}
 }
 \examples{
+
 data(abortion)
 
-cif.ab <- etmCIF(Surv(entry, exit, cause != 0) ~ group, abortion,
-               etype = cause, failcode = 3)
+cif.ab <- etmCIF(survival::Surv(entry, exit, cause != 0) ~ group, abortion,
+                 etype = cause, failcode = 3)
 
 cif.ab
 

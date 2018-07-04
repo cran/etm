@@ -74,6 +74,7 @@ etmprep <- function(time, status, data, tra, state.names, cens.name = NULL,
 
     ## let's try to start the real work
     newdata <- lapply(seq_len(n), function(i) {
+        
         ind <- which(status[i, ] != 0)
         li <- length(ind)
         if (li == 0) {

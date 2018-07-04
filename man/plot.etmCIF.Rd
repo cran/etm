@@ -60,7 +60,7 @@
   No value returned
 }
 \author{
-  Arthur Allignol \email{arthur.allignol@uni-ulm.de}
+  Arthur Allignol \email{arthur.allignol@gmail.com}
 }
 \seealso{
   \code{\link{etmCIF}}, \code{\link{plot.etm}}, \code{\link{lines.etm}}
@@ -68,8 +68,8 @@
 \examples{
 data(abortion)
 
-cif.ab <- etmCIF(Surv(entry, exit, cause != 0) ~ group, abortion,
-               etype = cause, failcode = 3)
+cif.ab <- etmCIF(survival::Surv(entry, exit, cause != 0) ~ group, abortion,
+                 etype = cause, failcode = 3)
 
 cif.ab
 
