@@ -1,4 +1,4 @@
-e0bc6a674c3b86c04f6a2b5094cb96f6 *DESCRIPTION
+346dfa103c4de2642957868d58949156 *DESCRIPTION
 bf4771a352eea182f8857ae19ab39f31 *LICENSE
 5b727d383e1ea6bef8ce90fee8d0534c *NAMESPACE
 81e563f2b8cd21851f3d912c92cd3de9 *R/ci.transfo.R
@@ -34,7 +34,7 @@ baba7e394ff9255728343ee4dc10b546 *data/sir.cont.txt.gz
 36b4ecf2f670d7cc5dbd8ffc8393bf39 *inst/CITATION
 3c6bb46d26563280b6d7bf86a82b760e *inst/doc/etmCIF_tutorial.R
 d995bff8026f0562f9b944ada1ed995c *inst/doc/etmCIF_tutorial.Rnw
-3c5bfa7fabffe5813995bcdfb2f0ff3d *inst/doc/etmCIF_tutorial.pdf
+0aa2ffe67815979fbd7d1b97f38ce150 *inst/doc/etmCIF_tutorial.pdf
 5541acbfe1040be8fbb765e7d2f193fe *man/abortion.Rd
 6989cdf3614ab98dc901a9acd4ebe1ae *man/clos.Rd
 a6b1f284f0091d00ec110eb6df56a64c *man/closPseudo.Rd
@@ -59,7 +59,7 @@ b864fd140417a12c804315ad061a427a *man/tra.Rd
 c4f6038afd25a1e7d383d8e91cbb1ebf *man/xyplot.etm.Rd
 ba32818dd84685090cce692c2a92298b *src/Makevars
 8d46d69896a1f1d31ed76035a0e49d67 *src/Makevars.win
-8df94ffc583923aaf755b85261e366b7 *src/cov_aj.cc
+8b4a6007502cf8b2c74e3712e025dbc0 *src/cov_aj.cc
 4a12b4c678109f26df68007d2d7eea41 *src/gen_msm.cpp
 d5f5f251eb8f170e07624d9b308643c7 *src/init.c
 8c8d9c0557fd89b3c9a725a238e6bb42 *src/los_etm.cpp
