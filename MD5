@@ -1,4 +1,4 @@
-346dfa103c4de2642957868d58949156 *DESCRIPTION
+b3d9b76bf7e6c49d1b53fee04db8e312 *DESCRIPTION
 bf4771a352eea182f8857ae19ab39f31 *LICENSE
 5b727d383e1ea6bef8ce90fee8d0534c *NAMESPACE
 81e563f2b8cd21851f3d912c92cd3de9 *R/ci.transfo.R
@@ -26,7 +26,7 @@ e271dfe8da75a7ef545c085a158b63ee *R/transfoData.R
 51ce105f7d32832c7ae823b78e5d2362 *R/xyplot.etm.R
 22ffeb4077655dafa2616b2d62a50258 *R/zzz.R
 81075f4111ecf686ba3e8248e748144c *README.md
-89cef505068b8112456bbc040469c298 *build/vignette.rds
+c82e53616201ff3ef8ed0bb55b7a5b6e *build/vignette.rds
 476bcb434771e9b96558abd030d09396 *data/abortion.txt.gz
 6ab49cb48191ac4da0f54e4804f19ea1 *data/fourD.rda
 dcae240445955c2f848e08eb333100c2 *data/los.data.csv.gz
@@ -34,10 +34,10 @@ baba7e394ff9255728343ee4dc10b546 *data/sir.cont.txt.gz
 36b4ecf2f670d7cc5dbd8ffc8393bf39 *inst/CITATION
 3c6bb46d26563280b6d7bf86a82b760e *inst/doc/etmCIF_tutorial.R
 d995bff8026f0562f9b944ada1ed995c *inst/doc/etmCIF_tutorial.Rnw
-0aa2ffe67815979fbd7d1b97f38ce150 *inst/doc/etmCIF_tutorial.pdf
+f3041543654782c6e83502346dd32fa3 *inst/doc/etmCIF_tutorial.pdf
 5541acbfe1040be8fbb765e7d2f193fe *man/abortion.Rd
 6989cdf3614ab98dc901a9acd4ebe1ae *man/clos.Rd
-a6b1f284f0091d00ec110eb6df56a64c *man/closPseudo.Rd
+669e8553181d710cc620f0666b90ce8d *man/closPseudo.Rd
 ba630645f4c94eee35e270c73c82ec80 *man/etm.Rd
 271989b496081f4fd77463a7ecc82f1a *man/etmCIF.Rd
 adc14b5a4c20fd0cdb15f1ce51480d3e *man/etmprep.Rd
@@ -64,8 +64,8 @@ ba32818dd84685090cce692c2a92298b *src/Makevars
 d5f5f251eb8f170e07624d9b308643c7 *src/init.c
 8c8d9c0557fd89b3c9a725a238e6bb42 *src/los_etm.cpp
 c6d79c413224332c4e5f9fbb55881da2 *src/utils.cpp
-41dbe4abd670152e765d38d8cecc9239 *tests/test.etmCIF.R
-da40f2ba3fb10cd13f538ff58d79391e *tests/test.etmCIF.Rout.save
-08f54cfdacf2b09faf630b0fe20c3567 *tests/tests.etm.R
-970c1508dc790d1f4b4c9e6cc88004da *tests/tests.etm.Rout.save
+f7528d19da8933f83bc94570a571b564 *tests/test.etmCIF.R
+6f81b538c1c28dbaaee58f1944afaf53 *tests/test.etmCIF.Rout.save
+aca5b39f5fe8a67d7e5f6316ec11d7ad *tests/tests.etm.R
+c21cef5c58af48d89d0f04bfc4c014c1 *tests/tests.etm.Rout.save
 d995bff8026f0562f9b944ada1ed995c *vignettes/etmCIF_tutorial.Rnw
