@@ -109,7 +109,7 @@ prob.sir
 
 summ.sir <- summary(prob.sir)
 all.equal(summ.sir[['0 1']]$P, as.vector(trprob(prob.sir, "0 1")))
-summ.sir[[3]]
+zapsmall(summ.sir[[3]], 12)
 
 ## gonna play a bit with the state names
 dd <- sir.cont

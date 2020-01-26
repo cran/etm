@@ -1,13 +1,11 @@
 
-R version 3.6.0 (2019-04-26) -- "Planting of a Tree"
-Copyright (C) 2019 The R Foundation for Statistical Computing
-Platform: x86_64-apple-darwin18.5.0 (64-bit)
+R Under development (unstable) (2020-01-25 r77715) -- "Unsuffered Consequences"
+Copyright (C) 2020 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
 Type 'license()' or 'licence()' for distribution details.
-
-  Natural language support but running in an English locale
 
 R is a collaborative project with many contributors.
 Type 'contributors()' for more information and
@@ -159,7 +157,7 @@ Estimate of P(1, 183)
 > summ.sir <- summary(prob.sir)
 > all.equal(summ.sir[['0 1']]$P, as.vector(trprob(prob.sir, "0 1")))
 [1] TRUE
-> summ.sir[[3]]
+> zapsmall(summ.sir[[3]], 12)
           P  time       var   lower  upper n.risk n.event
 1.5  0.0000   1.5 0.000e+00 0.00000 0.0000    394       0
 2    0.1187   2.0 2.641e-04 0.08683 0.1505    396      47
@@ -245,13 +243,13 @@ Estimate of P(1, 183)
 90   0.9966  90.0 1.695e-06 0.99404 0.9991      1       0
 95   0.9971  95.0 1.448e-06 0.99472 0.9994      2       0
 100  0.9976 100.0 1.203e-06 0.99542 0.9997      3       0
-101  0.9981 101.0 9.592e-07 0.99613 1.0000      3       1
-108  0.9985 108.0 7.169e-07 0.99688 1.0000      2       1
-113  0.9990 113.0 4.764e-07 0.99767 1.0000      1       0
-116  0.9990 116.0 4.764e-07 0.99767 1.0000      1       0
-124  0.9990 124.0 4.764e-07 0.99767 1.0000      2       0
-164  0.9990 164.0 4.764e-07 0.99767 1.0000      0       0
-183  1.0000 183.0 1.337e-19 1.00000 1.0000      1       1
+101  0.9981 101.0 9.590e-07 0.99613 1.0000      3       1
+108  0.9985 108.0 7.170e-07 0.99688 1.0000      2       1
+113  0.9990 113.0 4.760e-07 0.99767 1.0000      1       0
+116  0.9990 116.0 4.760e-07 0.99767 1.0000      1       0
+124  0.9990 124.0 4.760e-07 0.99767 1.0000      2       0
+164  0.9990 164.0 4.760e-07 0.99767 1.0000      0       0
+183  1.0000 183.0 0.000e+00 1.00000 1.0000      1       1
 > 
 > ## gonna play a bit with the state names
 > dd <- sir.cont
@@ -639,5 +637,5 @@ Expected change in LOS with weight.other: 1.951
 > options(old)
 > 
 > proc.time()
-   user  system elapsed 
- 25.171   0.549  13.970 
+    user   system  elapsed 
+2032.192   17.368  706.572 

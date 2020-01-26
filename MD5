@@ -1,4 +1,4 @@
-b3d9b76bf7e6c49d1b53fee04db8e312 *DESCRIPTION
+c2f5fb4cc5174c9344234b60b6fc46b1 *DESCRIPTION
 bf4771a352eea182f8857ae19ab39f31 *LICENSE
 5b727d383e1ea6bef8ce90fee8d0534c *NAMESPACE
 81e563f2b8cd21851f3d912c92cd3de9 *R/ci.transfo.R
@@ -66,6 +66,6 @@ d5f5f251eb8f170e07624d9b308643c7 *src/init.c
 c6d79c413224332c4e5f9fbb55881da2 *src/utils.cpp
 f7528d19da8933f83bc94570a571b564 *tests/test.etmCIF.R
 6f81b538c1c28dbaaee58f1944afaf53 *tests/test.etmCIF.Rout.save
-aca5b39f5fe8a67d7e5f6316ec11d7ad *tests/tests.etm.R
-c21cef5c58af48d89d0f04bfc4c014c1 *tests/tests.etm.Rout.save
+160592cba10a35eccfaf22806caa09d7 *tests/tests.etm.R
+64a23c53f84641a92d52f8533f212b36 *tests/tests.etm.Rout.save
 d995bff8026f0562f9b944ada1ed995c *vignettes/etmCIF_tutorial.Rnw
