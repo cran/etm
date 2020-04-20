@@ -73,7 +73,7 @@ summary.etm <- function(object, tr.choice, ci.fun = "linear", level = 0.95, time
             paste(namen[[1]][tmp[i, 1]], namen[[2]][tmp[i, 2]], sep = " ")
         })
         trs <- cbind(trs)
-        absorb <- setdiff(levels(object$tran$to), levels(object$trans$from))
+        absorb <- setdiff(as.character(object$tran$to), as.character(object$trans$from))
         for (i in seq_along(absorb))
             trs <- trs[-grep(paste("^", absorb[i], sep =""), trs, perl = TRUE)]
 
