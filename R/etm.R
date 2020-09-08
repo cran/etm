@@ -96,7 +96,7 @@ etm.data.frame <- function(data, state.names, tra, cens.name, s, t = "last",
         colnames(tra)[tra[i, ]==TRUE]
     })
     t.to <- unlist(t.to)
-    trans <- data.frame(from=t.from, to=t.to)
+    trans <- data.frame(from=t.from, to=t.to, stringsAsFactors=TRUE)
     namen <- paste(trans[, 1], trans[, 2])
 
     ## test on transitions

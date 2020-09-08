@@ -80,7 +80,7 @@ cova <- rbinom(6, 1, 0.5)
 
 dat <- data.frame(tdisease, tdeath,
                   stat.disease, stat.death,
-                  cova)
+                  cova, stringsAsFactors = TRUE)
 
 ## Possible transitions
 tra <- matrix(FALSE, 3, 3)

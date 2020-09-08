@@ -15,7 +15,7 @@ function(x) {
 ## ---------------------------------------------------------------------------------
 ## Usage: prepare.los.data( x )
 ##
-## x: data.frame of the form data.frame( id, j.01, j.02, j.03, j.12, j.13, cens):
+## x: data.frame of the form data.frame( id, j.01, j.02, j.03, j.12, j.13, cens, stringsAsFactors=TRUE):
 ##
 ## id:      id (patient id, admision id, ...)
 ## j.01:    observed time for jump from "0" to "1"
@@ -25,7 +25,7 @@ function(x) {
 ## j.13:    observed time for jump from "1" to "3"
 ## cens:    observed time for censoring
 ## ---------------------------------------------------------------------------------
-## Value: data.frame of the form data.frame(id, from, to, time ):
+## Value: data.frame of the form data.frame(id, from, to, time, stringsAsFactors=TRUE):
 ##
 ##        id:   id (patient id, admision id)
 ##        from: the state from where a transition occurs
@@ -100,7 +100,7 @@ function(x) {
              x[,9][x[,5] != Inf], x[,9][x[,6] != Inf],x[,9][x[,7] != Inf],
              x[,9][x[,8] != Inf])
 
-  observ <- data.frame(id, from, to, time, oid)
+  observ <- data.frame(id, from, to, time, oid, stringsAsFactors=TRUE)
   
   return(observ)
 }

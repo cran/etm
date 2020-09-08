@@ -58,7 +58,7 @@ etmCIF <- function(formula, data, etype, subset, na.action, failcode = 1) {
                           to = to,
                           entry = entry,
                           exit = exit,
-                          cov = cova)
+                          cov = cova, stringsAsFactors=TRUE)
 
     ## Now, let's use etm
     tab.cov <- sort(unique(dat.etm$cov))

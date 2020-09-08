@@ -80,6 +80,11 @@
   state occupation probabilities of being in state \eqn{i}{i} at time
   \eqn{t}{t} (Datta & Satten, 2001; Glidden, 2002)
 
+  Recent versions of R have changed the \code{data.frame} function,
+  where the default for the \code{stringsAsFactors}
+  argument from \code{TRUE} to \code{FALSE}. \code{etm} currently
+  depends on the states being factors, so that the user should use
+  \code{data.frame(..., stringsAsFactors=TRUE)}.
   
   }
 \value{

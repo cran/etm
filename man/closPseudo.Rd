@@ -59,6 +59,12 @@ closPseudo(data, state.names, tra, cens.name, s = 0,
   Computation of the pseudo-observations can be parallelised using the
   \code{mclapply} function of the \pkg{parallel} package. See argument
   \code{ncores}.
+
+  Recent versions of R have changed the \code{data.frame} function,
+  where the default for the \code{stringsAsFactors}
+  argument from \code{TRUE} to \code{FALSE}. \code{etm} currently
+  depends on the states being factors, so that the user should use
+  \code{data.frame(..., stringsAsFactors=TRUE)}.
 }
 \value{
   An object of class \code{closPseudo} with the following components:
@@ -81,7 +87,7 @@ closPseudo(data, state.names, tra, cens.name, s = 0,
 }
 
 \seealso{
-  \code{\link[parallel]{mclapply}}, \code{\link[etm]{clos}}
+  \code{\link{mclapply}}, \code{\link[etm]{clos}}
 }
 \examples{
 if(require("kmi", quietly = TRUE)) {

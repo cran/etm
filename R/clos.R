@@ -65,7 +65,7 @@ clos.msfit <- function(x, aw = FALSE, ratio = FALSE, cox_model, ...) {
     dat_surv <- data.frame(time = temp_surv$time,
                            n.risk = temp_surv$n.risk,
                            n.event = temp_surv$n.event,
-                           trans = rep(trans, temp_surv$strata))
+                           trans = rep(trans, temp_surv$strata), stringsAsFactors=TRUE)
 
     for (i in trans) {
         aa <- which(x$trans == i, arr.ind = TRUE)

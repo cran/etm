@@ -3,7 +3,7 @@ sans.cov <- function(i, object, trs.sep) {
     time <- object$time
     n.event <- object$n.event[trs.sep[i, 1], trs.sep[i, 2], ]
     n.risk <- object$n.risk[, trs.sep[i, 1]]
-    data.frame(P, time, n.risk, n.event)
+    data.frame(P, time, n.risk, n.event, stringsAsFactors=TRUE)
 }
 
 avec.cov <- function(i, object, transfo, trs.sep, trs, level) {
@@ -32,7 +32,7 @@ avec.cov <- function(i, object, transfo, trs.sep, trs, level) {
            })
     lower <- pmax(lower, 0)
     upper <- pmin(upper, 1)
-    data.frame(P, time, var, lower, upper, n.risk, n.event)
+    data.frame(P, time, var, lower, upper, n.risk, n.event, stringsAsFactors=TRUE)
 }
 
 

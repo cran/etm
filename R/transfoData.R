@@ -29,7 +29,7 @@ etmprep <- function(time, status, data, tra, state.names, cens.name = NULL,
         colnames(tra)[tra[i, ]==TRUE]
     })
     t.to <- unlist(t.to)
-    trans <- data.frame(from=t.from, to=t.to)
+    trans <- data.frame(from=t.from, to=t.to, stringsAsFactors=TRUE)
     absorb <- setdiff(levels(trans$to), levels(trans$from))
     transient <- unique(state.names[!(state.names %in% absorb)])
 
@@ -99,11 +99,11 @@ etmprep <- function(time, status, data, tra, state.names, cens.name = NULL,
         }
 
         if (is.null(keep)) {
-            tmp <- data.frame(idd, entry, exit, from, to)
+            tmp <- data.frame(idd, entry, exit, from, to, stringsAsFactors=TRUE)
         } else {
             aa <- matrix(apply(cova[i, , drop = FALSE], 2, rep, length(exit)),
                          length(exit), ncol(cova))
-            tmp <- data.frame(idd, entry, exit, from, to, aa)
+            tmp <- data.frame(idd, entry, exit, from, to, aa, stringsAsFactors=TRUE)
         }
         tmp
     })

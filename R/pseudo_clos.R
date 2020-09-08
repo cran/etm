@@ -101,7 +101,7 @@ closPseudo <- function(data, state.names, tra, cens.name, s = 0,
         setnames(psMatrix, c("id", colnames(psMatrix)[-1]))
         setkeyv(psMatrix, "id")
     } else {
-        psMatrix <- data.frame(ids, psMatrix)
+        psMatrix <- data.frame(ids, psMatrix, stringsAsFactors=TRUE)
         names(psMatrix) <- c("id", names(psMatrix)[-1])
     }
     
