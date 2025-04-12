@@ -216,7 +216,8 @@ etm.data.frame <- function(data, state.names, tra, cens.name, s, t = "last",
                 })
                 pos <- matrix(pos)
                 dimnames(var_aj) <- list(pos, pos, zzz$time)
-                var_aj[var_aj < 0] <- 0
+                for(i in 1:dim(var_aj)[3])
+                    diag(var_aj[,,i])[diag(var_aj[,,i]) < 0] <- 0
             } else {
                 var_aj <- NULL
             }

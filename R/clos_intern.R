@@ -1,5 +1,5 @@
 ### To be used for single endpoint
-clos.nocp <- function(x, aw, ratio) {
+clos_nocp <- function(x, aw, ratio) {
 
     dims <- dim(x$est)
     los <- matrix(rep(x$time, 3), ncol = 3, byrow = FALSE)
@@ -66,7 +66,7 @@ clos.nocp <- function(x, aw, ratio) {
 #######################################
 ## The competing risks version
 #######################################
-clos.cp <- function(x, aw, ratio) {
+clos_cp <- function(x, aw, ratio) {
 
     dims <- dim(x$est)
     los <- matrix(rep(x$time, 3), ncol = 3, byrow = FALSE)

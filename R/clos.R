@@ -24,10 +24,10 @@ clos.etm <- function(x, aw = FALSE, ratio = FALSE, ...) {
     ## I <- diag(1, dims[1])
     ## tr.mat <- array(apply(x$delta.na, 3, "+", I), dim = dims)
     if (comp.risk) {
-        res <- clos.cp(x, aw, ratio)
+        res <- clos_cp(x, aw, ratio)
         ## stop("not yet")
     }
-    else res <- clos.nocp(x, aw, ratio)
+    else res <- clos_nocp(x, aw, ratio)
 
     class(res) <- "clos.etm"
     res
@@ -131,7 +131,7 @@ clos.msfit <- function(x, aw = FALSE, ratio = FALSE, cox_model, ...) {
     if (comp.risk) {
         stop("'clos.msfit' is not yet implemented with competing risks")
     }
-    else res <- clos.nocp(zzz, aw, ratio)
+    else res <- clos_nocp(zzz, aw, ratio)
     class(res) <- "clos.etm"
 
     res

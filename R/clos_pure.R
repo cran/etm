@@ -16,14 +16,14 @@ clos_pure <- function(x, aw = FALSE) {
     tr.mat <- array(apply(x$delta.na, 3, "+", I), dim = dims)
     #tr.mat <- x$delta.na
     if (comp.risk) {
-        res <- clos.cp(x, tr.mat, aw)
+        res <- clos_cp(x, tr.mat, aw)
     }
-    else res <- clos.nocp(x, tr.mat, aw)
+    else res <- clos_nocp(x, tr.mat, aw)
     class(res) <- "clos.etm"
     res
 }
 
-clos.cp_pure <- function(x, tr.mat, aw) {
+clos_cp_pure <- function(x, tr.mat, aw) {
     dims <- dim(x$est)
     times <- if (sum(x$n.event[, , dims[3]]) != 0) x$time else x$time[-length(x$time)]
     los <- matrix(rep(times, 3), ncol = 3, byrow = FALSE)
@@ -105,7 +105,7 @@ clos.cp_pure <- function(x, tr.mat, aw) {
 
     
 
-clos.nocp_pure <- function(x, tr.mat, aw) {
+clos_nocp_pure <- function(x, tr.mat, aw) {
     dims <- dim(x$est)
     times <- if (sum(x$n.event[, , dims[3]]) != 0) x$time else x$time[-length(x$time)]
     los <- matrix(rep(times, 3), ncol = 3, byrow = FALSE)
